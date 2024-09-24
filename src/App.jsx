@@ -9,20 +9,37 @@ import AddSubcategory from "./pages/AddSubcategory";
 import Order from "./pages/Order";
 import Profile from "./pages/Profile";
 import UpdateProfile from "./pages/UpdateProfile";
+import Persit from "./pages/Persit";
+import RequiredAuth from "./pages/RequiredAuth";
+import { MainProvider } from "./context/Maincontext";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Verify from "./pages/Verify";
 
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={ <Layout /> }>
-        <Route index element={ <Home /> } />
-        <Route path="product" element={ <ProductList /> } />
-        <Route path="add" element={ <AddProduct /> } />
-        <Route path="category" element={ <AddCategory /> } />
-        <Route path="sub-category" element={ <AddSubcategory /> } />
-        <Route path="order" element={ <Order /> } />
-        <Route path="profile" element={<Profile/>}/>
-        <Route path="update" element={<UpdateProfile/>}/>
+      <Route path="/" element={
+        <MainProvider>
+          <Layout />
+        </MainProvider> }>
+        <Route path="login" element={ <Login /> } />
+        <Route path="register" element={ <Signup /> } />
+        <Route path="verify" element={<Verify/>}/>
+        <Route element={ <Persit /> }>
+          <Route element={ <RequiredAuth /> }>
+            <Route index element={ <Home /> } />
+            <Route path="product" element={ <ProductList /> } />
+            <Route path="add" element={ <AddProduct /> } />
+            <Route path="category" element={ <AddCategory /> } />
+            <Route path="sub-category" element={ <AddSubcategory /> } />
+            <Route path="order" element={ <Order /> } />
+            <Route path="profile" element={<Profile/>}/>
+            <Route path="update" element={<UpdateProfile/>}/>
+          </Route>
+        </Route>
+        
         {/* Missing Page */}
         <Route path="*" element={<Missing/>}/>
       </Route>

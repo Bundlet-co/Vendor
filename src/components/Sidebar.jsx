@@ -1,9 +1,14 @@
 import { Accordion, AccordionItem, Button } from "@nextui-org/react";
 import { BsChevronRight, BsPersonVcard, BsSpeedometer } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useMainContext from "../hooks/useMainContext";
+import useLogout from "../hooks/useLogout";
 
-
-const Sidebar = () => {
+const Sidebar = () =>
+{
+  const logout = useLogout()
+  const {user} = useMainContext()
+  const navigate = useNavigate()
   return (
     <aside className="text-black">
       <hr className=" border-neutral-400" />
@@ -23,7 +28,9 @@ const Sidebar = () => {
             <Link to="/profile" className="border rounded-lg p-2 border-neutral-400 hover:bg-neutral-500 hover:text-neutral-200 text-medium font-bold capitalize">Profile</Link>
             <Link to="/update" className="border rounded-lg p-2 border-neutral-400 hover:bg-neutral-500 hover:text-neutral-200 text-medium font-bold capitalize">Vendor update</Link>
             <Link to="/invoice" className="border rounded-lg p-2 border-neutral-400 hover:bg-neutral-500 hover:text-neutral-200 text-medium font-bold capitalize">invoice</Link>
-            <Button color="danger" variant="flat" className="font-bold">Log out</Button>
+            { user.name ? (
+              <Button color="danger" variant="flat" className="font-bold" onClick={logout}>Log out</Button>
+            ):<Button color="primary" variant="flat" className="font-bold" onClick={()=>navigate('/login')}>Login</Button>}
           </div>
         </AccordionItem>
         

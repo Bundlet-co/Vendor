@@ -1,9 +1,82 @@
 import { Button, Input, Textarea,Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import { BsGear, BsSearch } from "react-icons/bs";
 import { FaPencil, FaTrash } from "react-icons/fa6";
+import { useState } from "react";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import useMainContext from "../hooks/useMainContext";
 
 const AddCategory = () =>
 {
+  const [ formData, setFormData ] = useState( {
+    name: "",
+    slug: [],
+    description: ""
+    } )
+  const [ slug, setSlug ] = useState( "" );
+  const axiosPrivate = useAxiosPrivate()
+  const { openToast, closeToast } = useMainContext();
+  const [loading,setLoading] = useState(false)
+
+  const handleChange = ( e,setState ) =>
+  {
+    const { name, value } = e.target;
+    if ( Array.isArray( formData[ name ] ) ) {
+      if ( /[ ,]$/.test( value ) ) {
+        const newWord = value.split( /[ ,]+/ ).map( word => word.trim() ).filter( word => word );
+        const updatedWord = [ ...new Set( [ ...formData.slug, ...newWord ] ) ];
+        setFormData( ( prev ) => ( {
+          ...prev, [ name ]: updatedWord
+        } ) ) 
+        setState('')
+      } else {
+        setState(value)
+      }
+    } else {
+      setFormData( ( prev ) => ( {
+        ...prev, [name]:value
+      }))
+    }
+  };
+  const handleKeyDown = ( e ) =>
+  {
+    if ( e.key === 'Backspace' && slug === "" && formData.slug.length > 0 ) {
+      const lastWord = formData.slug[ formData.slug.length - 1 ];
+      setSlug( lastWord );
+      setFormData( prev => (
+        {
+          ...prev, slug:formData.slug.slice(0, -1)
+        }
+      ))
+    }
+  }
+
+  const submit = async () =>
+  {
+    try {
+      setLoading( true );
+      const res = await axiosPrivate.post( "/category", formData, {
+        headers: {
+          "Content-Type":"application/json"
+        }
+      })
+      openToast( res.data.message, "success" );
+      setFormData({
+        name: "",
+        slug: [],
+        description: ""
+      })
+    } catch (error) {
+      openToast(error.response.data.message,"error")
+    } finally {
+      setLoading( false );
+      setTimeout( () =>
+      {
+        closeToast()
+      },3000)
+    }
+  }
+
+
   const category = [
     {
       name: "Bag",
@@ -172,42 +245,43 @@ const AddCategory = () =>
                 labelPlacement="outside"
                 type="text"
                 placeholder="Name"
+                name="name"
+                value={ formData.name }
+                onChange={handleChange}
               />
             </div>
             <div className="w-full">
               <Input
+                name="slug"
+                value={ slug }
+                onChange={(e)=>handleChange(e,setSlug)}
                 label="Slug"
                 labelPlacement="outside"
                 type="text"
                 placeholder="Slug"
+                onKeyDown={handleKeyDown}
               />
+              { formData.slug.length > 0 ? <div className="flex items-center space-x-4 py-2">
+                {
+                  formData.slug.map( item => (
+                  <p key={item} className="bg-neutral-300 mx-1 text-neutral-700 capitalize rounded-lg p-1">{ item }</p>
+                ))
+                }
+              </div>: null}
             </div>
             <div className="w-full">
               <Textarea
-                label="Sort description"
+                name="description"
+                value={ formData.description }
+                onChange={handleChange}
+                label="Description"
                 labelPlacement="outside"
                 type="text"
-                placeholder="Sort description"
-              />
-            </div>
-            <div className="w-full">
-              <Textarea
-                label="Product Details"
-                labelPlacement="outside"
-                type="text"
-                placeholder="Full description"
-              />
-            </div>
-            <div className="w-full">
-              <Input
-                label="Product Tag ( Make comma to separate tags )"
-                labelPlacement="outside"
-                type="text"
-                placeholder="Product tag"
+                placeholder="Enter category description"
               />
             </div>
             <div className="w-full my-4">
-              <Button color="primary" variant="flat">Submit</Button>
+              <Button color="primary" variant="flat" isLoading={ loading } onClick={ submit }>{ loading ? "Submitting" : "submit" }</Button>
             </div>
           </div>
         </div>

@@ -1,9 +1,82 @@
-import { Button, Input, Textarea,Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent, Select, SelectItem } from "@nextui-org/react";
+import { Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent, Select, SelectItem } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 import { BsGear, BsSearch } from "react-icons/bs";
 import { FaPencil, FaTrash } from "react-icons/fa6";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import useMainContext from "../hooks/useMainContext";
 
 const AddSubcategory = () =>
 {
+  const [ categories, setCategories ] = useState( [] );
+  const [ formData, setFormData ] = useState( {
+    name: "",
+    slug: [],
+    category_id:""
+    } )
+  const [ slug, setSlug ] = useState( "" );
+  const axiosPrivate = useAxiosPrivate()
+  const { openToast, closeToast } = useMainContext();
+  const [ loading, setLoading ] = useState( false )
+  
+    const handleChange = ( e,setState ) =>
+  {
+    const { name, value } = e.target;
+    if ( Array.isArray( formData[ name ] ) ) {
+      if ( /[ ,]$/.test( value ) ) {
+        const newWord = value.split( /[ ,]+/ ).map( word => word.trim() ).filter( word => word );
+        const updatedWord = [ ...new Set( [ ...formData.slug, ...newWord ] ) ];
+        setFormData( ( prev ) => ( {
+          ...prev, [ name ]: updatedWord
+        } ) ) 
+        setState('')
+      } else {
+        setState(value)
+      }
+    } else {
+      setFormData( ( prev ) => ( {
+        ...prev, [name]:value
+      }))
+    }
+  };
+  const handleKeyDown = ( e ) =>
+  {
+    if ( e.key === 'Backspace' && slug === "" && formData.slug.length > 0 ) {
+      const lastWord = formData.slug[ formData.slug.length - 1 ];
+      setSlug( lastWord );
+      setFormData( prev => (
+        {
+          ...prev, slug:formData.slug.slice(0, -1)
+        }
+      ))
+    }
+  }
+
+  const submit = async () =>
+  {
+    try {
+      setLoading( true );
+      console.log(formData);
+      const res = await axiosPrivate.post( "/subcategory", formData, {
+        headers: {
+          "Content-Type":"application/json"
+        }
+      })
+      openToast( res.data.message, "success" );
+      setFormData({
+        name: "",
+        slug: [],
+        description: ""
+      })
+    } catch (error) {
+      openToast(error.response.data.message,"error")
+    } finally {
+      setLoading( false );
+      setTimeout( () =>
+      {
+        closeToast()
+      },3000)
+    }
+  }
   const category = [
     {
       name: "Cooler",
@@ -35,7 +108,22 @@ const AddSubcategory = () =>
       productAmount: 20,
       status: true,
     },
-  ]
+  ] 
+
+  useEffect( () =>
+  {
+    const getCategories = async () =>{
+      try {
+        const res = await axiosPrivate.get( '/category' );
+        const result = await res.data
+        setCategories( result.data.category )
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    
+    getCategories();
+  },[axiosPrivate])
   
   return (
     <div className="p-4 w-full h-full overflow-y-auto">
@@ -47,14 +135,10 @@ const AddSubcategory = () =>
           {/* Form data */ }
           <div className="my-4 grid grid-cols-1 gap-4">
             <div className="w-full">
-              <Select label="Main Category" labelPlacement="outside" placeholder="Select Main category" required>
-                <SelectItem>Clothe</SelectItem>
-                <SelectItem>Electronics</SelectItem>
-                <SelectItem>Computer</SelectItem>
-                <SelectItem>Furniture</SelectItem>
-                <SelectItem>Costmetics</SelectItem>
-                <SelectItem>Perfume</SelectItem>
-                <SelectItem>Shoes</SelectItem>
+              <Select label="Main Category" labelPlacement="outside" placeholder="Select Main category" onKeyDown={handleKeyDown} required selectedKeys={[formData.category_id] } name="category_id" onChange={handleChange}>
+                { categories.map( category => (
+                  <SelectItem key={category.id}>{category.name}</SelectItem>
+                )) }
               </Select>
             </div>
             <div className="w-full">
@@ -63,42 +147,32 @@ const AddSubcategory = () =>
                 labelPlacement="outside"
                 type="text"
                 placeholder="Name"
+                name="name"
+                value={ formData.name }
+                onChange={handleChange}
               />
             </div>
             <div className="w-full">
               <Input
+                name="slug"
+                value={ slug }
+                onChange={(e)=>handleChange(e,setSlug)}
                 label="Slug"
                 labelPlacement="outside"
                 type="text"
                 placeholder="Slug"
+                onKeyDown={handleKeyDown}
               />
-            </div>
-            <div className="w-full">
-              <Textarea
-                label="Sort description"
-                labelPlacement="outside"
-                type="text"
-                placeholder="Sort description"
-              />
-            </div>
-            <div className="w-full">
-              <Textarea
-                label="Product Details"
-                labelPlacement="outside"
-                type="text"
-                placeholder="Full description"
-              />
-            </div>
-            <div className="w-full">
-              <Input
-                label="Product Tag ( Make comma to separate tags )"
-                labelPlacement="outside"
-                type="text"
-                placeholder="Product tag"
-              />
+              { formData.slug.length > 0 ? <div className="flex items-center space-x-4 py-2">
+                {
+                  formData.slug.map( item => (
+                  <p key={item} className="bg-neutral-300 mx-1 text-neutral-700 capitalize rounded-lg p-1">{ item }</p>
+                ))
+                }
+              </div>: null}
             </div>
             <div className="w-full my-4">
-              <Button color="primary" variant="flat">Submit</Button>
+              <Button color="primary" variant="flat" isLoading={loading} onClick={submit}>{ loading ? "Submitting" : "submit" }</Button>
             </div>
           </div>
         </div>

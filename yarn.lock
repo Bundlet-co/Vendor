@@ -1345,6 +1345,14 @@
   dependencies:
     "@nextui-org/use-safe-layout-effect" "2.0.6"
 
+"@nextui-org/use-infinite-scroll@^2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@nextui-org/use-infinite-scroll/-/use-infinite-scroll-2.1.5.tgz#a33b0cca4b4478020f6c96ea64f5f2481722d3b6"
+  integrity sha512-btM1ZQanhVMh1pgV0gjbjPsYCriYX7vmQUtB55Ft8Ymusz2qi9e6obAgxez1Q70GPhlHsWA6wBOleeDee5h5XA==
+  dependencies:
+    "@types/lodash.debounce" "^4.0.7"
+    lodash.debounce "^4.0.8"
+
 "@nextui-org/use-is-mobile@2.0.9":
   version "2.0.9"
   resolved "https://registry.yarnpkg.com/@nextui-org/use-is-mobile/-/use-is-mobile-2.0.9.tgz#6bced5d78b1845c180eaaa813026be6cfbdb20d8"
@@ -1625,6 +1633,20 @@
     "@internationalized/string" "^3.2.3"
     "@react-aria/ssr" "^3.9.5"
     "@react-aria/utils" "^3.25.1"
+    "@react-types/shared" "^3.24.1"
+    "@swc/helpers" "^0.5.0"
+
+"@react-aria/i18n@^3.12.2":
+  version "3.12.2"
+  resolved "https://registry.yarnpkg.com/@react-aria/i18n/-/i18n-3.12.2.tgz#f1e63ddb5227bc1c8a17cd3475235851e428dd0b"
+  integrity sha512-PvEyC6JWylTpe8dQEWqQwV6GiA+pbTxHQd//BxtMSapRW3JT9obObAnb/nFhj3HthkUvqHyj0oO1bfeN+mtD8A==
+  dependencies:
+    "@internationalized/date" "^3.5.5"
+    "@internationalized/message" "^3.1.4"
+    "@internationalized/number" "^3.5.3"
+    "@internationalized/string" "^3.2.3"
+    "@react-aria/ssr" "^3.9.5"
+    "@react-aria/utils" "^3.25.2"
     "@react-types/shared" "^3.24.1"
     "@swc/helpers" "^0.5.0"
 
@@ -2018,6 +2040,17 @@
     "@swc/helpers" "^0.5.0"
     clsx "^2.0.0"
 
+"@react-aria/utils@^3.25.2":
+  version "3.25.2"
+  resolved "https://registry.yarnpkg.com/@react-aria/utils/-/utils-3.25.2.tgz#2cce329849617b2df6a34f0931abe431f60aaedc"
+  integrity sha512-GdIvG8GBJJZygB4L2QJP1Gabyn2mjFsha73I2wSe+o4DYeGWoJiMZRM06PyTIxLH4S7Sn7eVDtsSBfkc2VY/NA==
+  dependencies:
+    "@react-aria/ssr" "^3.9.5"
+    "@react-stately/utils" "^3.10.3"
+    "@react-types/shared" "^3.24.1"
+    "@swc/helpers" "^0.5.0"
+    clsx "^2.0.0"
+
 "@react-aria/visually-hidden@3.8.12":
   version "3.8.12"
   resolved "https://registry.yarnpkg.com/@react-aria/visually-hidden/-/visually-hidden-3.8.12.tgz#89388b4773b8fbea4b5f9682e807510c14218c93"
@@ -2125,6 +2158,14 @@
     "@react-stately/select" "^3.6.6"
     "@react-stately/utils" "^3.10.2"
     "@react-types/combobox" "^3.12.1"
+    "@react-types/shared" "^3.24.1"
+    "@swc/helpers" "^0.5.0"
+
+"@react-stately/data@^3.11.6":
+  version "3.11.6"
+  resolved "https://registry.yarnpkg.com/@react-stately/data/-/data-3.11.6.tgz#bf4e5216cac3f1e302924b1e5369519a27b76146"
+  integrity sha512-S8q1Ejuhijl8SnyVOdDNFrMrWWnLk/Oh1ZT3KHSbTdpfMRtvhi5HukoiP06jlzz75phnpSPQL40npDtUB/kk3Q==
+  dependencies:
     "@react-types/shared" "^3.24.1"
     "@swc/helpers" "^0.5.0"
 
@@ -2433,6 +2474,13 @@
   version "3.10.2"
   resolved "https://registry.yarnpkg.com/@react-stately/utils/-/utils-3.10.2.tgz#09377f771592ff537c901aa64178cb3a004a916f"
   integrity sha512-fh6OTQtbeQC0ywp6LJuuKs6tKIgFvt/DlIZEcIpGho6/oZG229UnIk6TUekwxnDbumuYyan6D9EgUtEMmT8UIg==
+  dependencies:
+    "@swc/helpers" "^0.5.0"
+
+"@react-stately/utils@^3.10.3":
+  version "3.10.3"
+  resolved "https://registry.yarnpkg.com/@react-stately/utils/-/utils-3.10.3.tgz#ed1bf00a8419750fc11ccba73350b97e30f3f707"
+  integrity sha512-moClv7MlVSHpbYtQIkm0Cx+on8Pgt1XqtPx6fy9rQFb2DNc9u1G3AUVnqA17buOkH1vLxAtX4MedlxMWyRCYYA==
   dependencies:
     "@swc/helpers" "^0.5.0"
 
