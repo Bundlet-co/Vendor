@@ -24,7 +24,7 @@ const Layout = () =>
         </div>
         {/* MainContent */ }
         <div className="flex flex-grow border h-full overflow-y-auto w-3/4">
-          <Outlet/>
+          <Outlet />
         </div>
       </div>
     </div>

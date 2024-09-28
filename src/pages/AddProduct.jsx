@@ -24,6 +24,7 @@ const AddProduct = () =>
   const [ date, setDate ] = useState( today(getLocalTimeZone()) );
   const [ loading, setLoading ] = useState( false )
   const [ categories, setCategories ] = useState( [] );
+  const [ dispatch_location, setDispatch_location ] = useState( [] );
 
 
 
@@ -41,7 +42,10 @@ const AddProduct = () =>
     available_till: "",
     delivery_duration: "",
     dispatch_location: "",
-    tags: []
+    tags: [],
+    variationType: "",
+    variationPrice: 0,
+    variationAmount:0
   } )
 
   const handleChange = ( e,setState ) =>
@@ -68,6 +72,8 @@ const AddProduct = () =>
         ...prev, [name]:value
       }))
     }
+
+    console.log(formData);
   };
 
   const handleKeyDown = ( e ) =>
@@ -142,19 +148,22 @@ const AddProduct = () =>
       openToast(res.data.message,"success")
       setFormData( {
         name: "",
-    category: "",
-    slug: [],
-    description: "",
-    price: "",
-    color: [],
-    size: [],
-    quantity: "",
-    discount_type: "",
-    discount_amount: "",
-    available_till: "",
-    delivery_duration: "",
-    dispatch_location: "",
-    tags: []
+        category: "",
+        slug: [],
+        description: "",
+        price: "",
+        color: [],
+        size: [],
+        quantity: "",
+        discount_type: "",
+        discount_amount: "",
+        available_till: "",
+        delivery_duration: "",
+        dispatch_location: "",
+        tags: [],
+        variationType: "unit",
+        variationPrice: "",
+        variationAmount:""
       })
       setHero( thumb )
       setImg1( thumb )
@@ -186,8 +195,20 @@ const AddProduct = () =>
         console.error(error)
       }
     }
+
+    const getDispatchLocations = async () =>
+    {
+      try {
+        const res = await axiosPrivate.get( '/dispatch' );
+        const result = await res.data
+        setDispatch_location( result.data.locations )
+      } catch ( e ) {
+        console.error(e);
+      }
+    }
     
     getCategories();
+    getDispatchLocations();
   },[axiosPrivate])
 
   return (
@@ -334,7 +355,48 @@ const AddProduct = () =>
                 placeholder="Enter category description"
               />
             </div>
-            <div className="col-span-3 ">
+            <div className="col-span-full">
+              <p className="text-lg">Variation</p>
+              <div className="grid grid-cols-6 gap-4 my-4">
+                <div className="col-span-3">
+                  <Input
+                    name="variationAmount"
+                    onChange={ handleChange }
+                    labelPlacement="outside"
+                    label="Weight"
+                    placeholder="e.g 5"
+                    value={formData.variationAmount}
+                    endContent={
+                      <Select name="variationType" aria-label="Units" selectedKeys={ [ formData.variationType ] } onChange={ handleChange } placeholder="unit">
+                        <SelectItem key="unit">unit</SelectItem>
+                        <SelectItem key="kg">kg</SelectItem>
+                        <SelectItem key="g">g</SelectItem>
+                        <SelectItem key="cm">cm</SelectItem>
+                        <SelectItem key="m">m</SelectItem>
+                        <SelectItem key="lbs">lbs</SelectItem>
+                      </Select>
+                    }
+                  />
+                </div>
+                <div className="col-span-3">
+                  <Input
+                    name="variationPrice"
+                    onChange={ handleChange }
+                    labelPlacement="outside"
+                    label="Price"
+                    placeholder="2"
+                    value={formData.variationPrice}
+                    endContent={ <div className=" flex  items-center text-tiny">
+                      <p>per/</p>
+                      <p>{ formData.variationType }</p>
+                    </div>}
+                  />
+                </div>
+              </div>
+              
+              {/* By sizes */}
+              <div className="grid grid-cols-6">
+                <div className="col-span-3 ">
               <label htmlFor="color">Color</label>
               <div className="flex space-x-2 items-center mt-1">
                 <Input
@@ -394,6 +456,8 @@ const AddProduct = () =>
                 placeholder="eg: 5"
               />
             </div>
+              </div>
+            </div>
             <div className="col-span-3">
               <Select name="discount_type" selectedKeys={[formData.discount_type]} onChange={handleChange} label="Discount Type" labelPlacement="outside" placeholder="Select discount type">
                 <SelectItem key="flat">Flat</SelectItem>
@@ -446,15 +510,17 @@ const AddProduct = () =>
               />
             </div>
             <div className="col-span-full">
-              <Textarea
-                label="Diapatch Location"
-                labelPlacement="outside"
-                type="text"
-                placeholder="Dispatch location"
-                name="dispatch_location"
-                value={ formData.dispatch_location }
-                onChange={handleChange}
-              />
+              { dispatch_location.length <= 0 ? (
+                <Select label="Dispatch Location" labelPlacement="outside"  placeholder="No location added" required isDisabled>
+                  
+                </Select>
+              ): (
+                <Select label="Dispatch Location" name="dispatch_location" labelPlacement="outside" selectedKeys={ [ formData.dispatch_location ] } onChange={ handleChange } placeholder="select a dispatch location" required>
+                { dispatch_location.map( category => (
+                  <SelectItem key={category.id}>{category.name}</SelectItem>
+                ))}
+              </Select>
+              )}
             </div>
             <div className="col-span-full">
               <Button isLoading={loading} color="primary" variant="flat" className="fon-bold" onClick={submit}>Submit</Button>
