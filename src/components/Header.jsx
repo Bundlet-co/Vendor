@@ -34,7 +34,8 @@ const Header = () =>
             <Popover placement="bottom" color="default">
               <PopoverTrigger>
                 <Avatar src={user?.dp ? `${dev_url.replace("/merchant","")}/${user.dp.replace("public/","")}` :"/favicon.ico"} size={user?.dp ? "md" : "sm"}  className="bg-gray-400" role="button"/>
-              </PopoverTrigger><PopoverTrigger>
+              </PopoverTrigger>
+              <PopoverTrigger>
               <PopoverContent className="w-72">
                 
                   <div className="w-full p-2">

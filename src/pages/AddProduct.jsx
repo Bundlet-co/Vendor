@@ -1,4 +1,4 @@
-import { Input, Select, SelectSection,SelectItem, Textarea, CheckboxGroup,Checkbox, DatePicker, Button, Image, Accordion ,AccordionItem} from "@nextui-org/react";
+import { Input, Select, SelectSection,SelectItem, Textarea, DatePicker, Button, Image, Accordion ,AccordionItem} from "@nextui-org/react";
 import { FaPencil } from "react-icons/fa6";
 import thumb from "../Assets/img/thumb.png"
 import { BsPlus } from "react-icons/bs";
@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import {getLocalTimeZone, today} from "@internationalized/date";
 import useMainContext from "../hooks/useMainContext";
+import Complementry from "../components/products/Complementry";
+import Variation from "../components/products/Variation";
 
 const AddProduct = () =>
 {
@@ -20,11 +22,12 @@ const AddProduct = () =>
   const [ hero, setHero ] = useState( thumb );
   const [ dp, setDp ] = useState( thumb );
   const [ slug, setSlug ] = useState( "" )
-  const [ /* size */, setSize ] = useState( "" );
   const [ date, setDate ] = useState( today(getLocalTimeZone()) );
   const [ loading, setLoading ] = useState( false )
   const [ categories, setCategories ] = useState( [] );
   const [ dispatch_location, setDispatch_location ] = useState( [] );
+  const [ complementryData, setComplemetryData ] = useState( [] );
+  const [variation,setVariation] = useState([])
 
 
 
@@ -34,18 +37,14 @@ const AddProduct = () =>
     slug: [],
     description: "",
     price: "",
-    color: [],
-    size: [],
     quantity: "",
     discount_type: "",
     discount_amount: "",
     available_till: "",
     delivery_duration: "",
     dispatch_location: "",
-    tags: [],
-    variationType: "",
-    variationPrice: 0,
-    variationAmount:0
+    unit: "",
+    product_type:""
   } )
 
   const handleChange = ( e,setState ) =>
@@ -73,7 +72,6 @@ const AddProduct = () =>
       }))
     }
 
-    console.log(formData);
   };
 
   const handleKeyDown = ( e ) =>
@@ -122,8 +120,14 @@ const AddProduct = () =>
       images.forEach( image =>
       {
         data.append('images',image)
+      } )
+      complementryData.forEach( item =>
+      {
+        data.append( "suplementryImage", item.file );
       })
-      data.append("opening_date", date)
+      data.append( "opening_date", date )
+      data.append( "suplementry_product", JSON.stringify( complementryData ) )
+      data.append("variation", JSON.stringify(variation))
 
       Object.entries( formData ).forEach( ( [ key, value ] ) =>
       {
@@ -137,10 +141,9 @@ const AddProduct = () =>
         }
       } )
       
-      console.log( formData );
       console.log(data);
-
-      const res = await axiosPrivate.post('/product',data,{
+      return
+      const res = await axiosPrivate.post('/product',{...data,suplementry_product:complementryData,variation},{
         headers:{"Content-Type":"multipart/form-data"}
       } )
       const result = await res.data.data.product
@@ -201,7 +204,7 @@ const AddProduct = () =>
       try {
         const res = await axiosPrivate.get( '/dispatch' );
         const result = await res.data
-        setDispatch_location( result.data.locations )
+        setDispatch_location( result.data.location )
       } catch ( e ) {
         console.error(e);
       }
@@ -214,8 +217,8 @@ const AddProduct = () =>
   return (
     <div className="p-4 w-full h-full overflow-y-auto">
       <p className="font-extrabold text-xl capitalize text-primary">Add Product</p>
-      <div className="grid grid-cols-6 gap-4 rounded-lg my-4 p-3">
-        <div className="col-span-full lg:col-span-3 border rounded-lg p-4">
+      <div className="grid grid-cols-6 gap-4 rounded-lg my-4 p-3 ">
+        <div className="col-span-full lg:col-span-3 border rounded-lg p-4 max-h-[100dvh] overflow-y-auto">
           {/* Hero Image */}
           <div className="h-72 border relative">
             <div className="w-full relative flex items-center justify-center h-full">
@@ -292,15 +295,13 @@ const AddProduct = () =>
             </div>
           </div>
           <Accordion>
-            <AccordionItem key="1" aria-label="Supplementary product" title="Complementary Product" indicator={<BsPlus/>}>
-              <div>
-                hello world
-              </div>
+            <AccordionItem key="1" aria-label="Supplementary product" title="Complementary Product" indicator={<BsPlus size={24} className="font-extrabold"/>}>
+              <Complementry submittedData={complementryData} setSubmittedData={setComplemetryData}/>
             </AccordionItem>
           </Accordion>
         </div>
 
-        <div className="col-span-full lg:col-span-3 border rounded-lg p-4">
+        <div className="col-span-full lg:col-span-3 border rounded-lg p-4 max-h-[100dvh] overflow-y-auto">
           {/* Form Input field */ }
           <div className="grid grid-cols-6 gap-8">
             <div className="col-span-3">
@@ -355,108 +356,43 @@ const AddProduct = () =>
                 placeholder="Enter category description"
               />
             </div>
-            <div className="col-span-full">
-              <p className="text-lg">Variation</p>
-              <div className="grid grid-cols-6 gap-4 my-4">
-                <div className="col-span-3">
-                  <Input
-                    name="variationAmount"
-                    onChange={ handleChange }
-                    labelPlacement="outside"
-                    label="Weight"
-                    placeholder="e.g 5"
-                    value={formData.variationAmount}
-                    endContent={
-                      <Select name="variationType" aria-label="Units" selectedKeys={ [ formData.variationType ] } onChange={ handleChange } placeholder="unit">
-                        <SelectItem key="unit">unit</SelectItem>
-                        <SelectItem key="kg">kg</SelectItem>
-                        <SelectItem key="g">g</SelectItem>
-                        <SelectItem key="cm">cm</SelectItem>
-                        <SelectItem key="m">m</SelectItem>
-                        <SelectItem key="lbs">lbs</SelectItem>
-                      </Select>
-                    }
-                  />
-                </div>
-                <div className="col-span-3">
-                  <Input
-                    name="variationPrice"
-                    onChange={ handleChange }
-                    labelPlacement="outside"
-                    label="Price"
-                    placeholder="2"
-                    value={formData.variationPrice}
-                    endContent={ <div className=" flex  items-center text-tiny">
-                      <p>per/</p>
-                      <p>{ formData.variationType }</p>
-                    </div>}
-                  />
-                </div>
-              </div>
-              
-              {/* By sizes */}
-              <div className="grid grid-cols-6">
-                <div className="col-span-3 ">
-              <label htmlFor="color">Color</label>
-              <div className="flex space-x-2 items-center mt-1">
-                <Input
-                  name="color"
-                  onChange={handleChange}
-                  labelPlacement="outside"
-                  type="color"
-                  className="w-20 h-20"
-                />
-                <Input
-                  name="color"
-                  onChange={handleChange}
-                  labelPlacement="outside"
-                  type="color"
-                  className="w-20 h-20"
-                />
-                <Input
-                  labelPlacement="outside"
-                  name="color"
-                  onChange={handleChange}
-                  type="color"
-                  className="w-20 h-20"
-                />
-              </div>
+            <div className="col-span-3">
+              <Select name="type" label="Product Type" placeholder="Enter product type" labelPlacement="outside">
+                <SelectItem key="physical">Physical</SelectItem>
+                <SelectItem key="breakable">Breakable</SelectItem>
+              </Select>
             </div>
             <div className="col-span-3">
-              <CheckboxGroup
-                label="size"
-                orientation="horizontal"
-                size="sm">
-                <Checkbox name="size" onChange={(e)=>handleChange(e,setSize)} value="s">S</Checkbox>
-                <Checkbox name="size" onChange={(e)=>handleChange(e,setSize)} value="m">M</Checkbox>
-                <Checkbox name="size" onChange={(e)=>handleChange(e,setSize)} value="l">L</Checkbox>
-                <Checkbox name="size" onChange={(e)=>handleChange(e,setSize)} value="xl">XL</Checkbox>
-                <Checkbox name="size" onChange={(e)=>handleChange(e,setSize)} value="xxl">XXL</Checkbox>
-              </CheckboxGroup>
+              <Select name="variationType" label="Units" selectedKeys={ [ formData.variationType ] } onChange={ handleChange } placeholder="select a unit" labelPlacement="outside">
+                <SelectItem key="unit">unit</SelectItem>
+                <SelectItem key="kg">kg</SelectItem>
+                <SelectItem key="g">g</SelectItem>
+                <SelectItem key="cm">cm</SelectItem>
+                <SelectItem key="m">m</SelectItem>
+                <SelectItem key="lbs">lbs</SelectItem>
+              </Select>
             </div>
-            <div className="col-span-3">
+            <div className="col-span-3 pe-2">
               <Input
                 name="price"
                 value={ formData.price }
                 onChange={handleChange}
-                label="Price (in NGN)"
+                label="Unit Price (in NGN)"
                 labelPlacement="outside"
                 type="number"
-                placeholder="eg:50000"
+                placeholder="eg:5000"
               />
             </div>
-            <div className="col-span-3">
+            <div className="col-span-3 ps-1">
               <Input
                 name="quantity"
                 value={ formData.quantity }
                 onChange={handleChange}
-                label="Quantity"
+                label="Current Stock Qty"
                 labelPlacement="outside"
                 type="number"
                 placeholder="eg: 5"
               />
-            </div>
-              </div>
             </div>
             <div className="col-span-3">
               <Select name="discount_type" selectedKeys={[formData.discount_type]} onChange={handleChange} label="Discount Type" labelPlacement="outside" placeholder="Select discount type">
@@ -510,14 +446,20 @@ const AddProduct = () =>
               />
             </div>
             <div className="col-span-full">
-              { dispatch_location.length <= 0 ? (
+              <Accordion>
+                <AccordionItem key="1" aria-label="Variation" title="Variation" indicator={<BsPlus size={24} className="font-extrabold"/>}>
+                  <Variation variations={variation} setVariations={setVariation}/>
+                </AccordionItem>
+              </Accordion>
+            </div>
+            <div className="col-span-full">
+              { !dispatch_location  ? (
                 <Select label="Dispatch Location" labelPlacement="outside"  placeholder="No location added" required isDisabled>
-                  
                 </Select>
               ): (
                 <Select label="Dispatch Location" name="dispatch_location" labelPlacement="outside" selectedKeys={ [ formData.dispatch_location ] } onChange={ handleChange } placeholder="select a dispatch location" required>
                 { dispatch_location.map( category => (
-                  <SelectItem key={category.id}>{category.name}</SelectItem>
+                  <SelectItem key={category.address}>{category.address}</SelectItem>
                 ))}
               </Select>
               )}
@@ -532,4 +474,108 @@ const AddProduct = () =>
   )
 }
 
-export default AddProduct
+export default AddProduct;
+
+{/* <div className="col-span-full">
+              <p className="text-lg">Variation</p>
+              <div className="grid grid-cols-6 gap-4 my-4">
+                <div className="col-span-3">
+                  <Input
+                    name="variationAmount"
+                    onChange={ handleChange }
+                    labelPlacement="outside"
+                    label="Weight"
+                    placeholder="e.g 5"
+                    value={formData.variationAmount}
+                    endContent={
+                      <Select name="variationType" aria-label="Units" selectedKeys={ [ formData.variationType ] } onChange={ handleChange } placeholder="unit">
+                        <SelectItem key="unit">unit</SelectItem>
+                        <SelectItem key="kg">kg</SelectItem>
+                        <SelectItem key="g">g</SelectItem>
+                        <SelectItem key="cm">cm</SelectItem>
+                        <SelectItem key="m">m</SelectItem>
+                        <SelectItem key="lbs">lbs</SelectItem>
+                      </Select>
+                    }
+                  />
+                </div>
+                <div className="col-span-3">
+                  <Input
+                    name="variationPrice"
+                    onChange={ handleChange }
+                    labelPlacement="outside"
+                    label="Price"
+                    placeholder="2"
+                    value={formData.variationPrice}
+                    endContent={ <div className=" flex  items-center text-tiny">
+                      <p>per/</p>
+                      <p>{ formData.variationType }</p>
+                    </div>}
+                  />
+                </div>
+              </div>
+              
+              {/* By sizes 
+              <div className="grid grid-cols-6">
+                <div className="col-span-3 ">
+              <label htmlFor="color">Color</label>
+              <div className="flex space-x-2 items-center mt-1">
+                <Input
+                  name="color"
+                  onChange={handleChange}
+                  labelPlacement="outside"
+                  type="color"
+                  className="w-20 h-20"
+                />
+                <Input
+                  name="color"
+                  onChange={handleChange}
+                  labelPlacement="outside"
+                  type="color"
+                  className="w-20 h-20"
+                />
+                <Input
+                  labelPlacement="outside"
+                  name="color"
+                  onChange={handleChange}
+                  type="color"
+                  className="w-20 h-20"
+                />
+              </div>
+            </div>
+            <div className="col-span-3">
+              <CheckboxGroup
+                label="size"
+                orientation="horizontal"
+                size="sm">
+                <Checkbox name="size" onChange={(e)=>handleChange(e,setSize)} value="s">S</Checkbox>
+                <Checkbox name="size" onChange={(e)=>handleChange(e,setSize)} value="m">M</Checkbox>
+                <Checkbox name="size" onChange={(e)=>handleChange(e,setSize)} value="l">L</Checkbox>
+                <Checkbox name="size" onChange={(e)=>handleChange(e,setSize)} value="xl">XL</Checkbox>
+                <Checkbox name="size" onChange={(e)=>handleChange(e,setSize)} value="xxl">XXL</Checkbox>
+              </CheckboxGroup>
+            </div>
+            <div className="col-span-3 pe-2">
+              <Input
+                name="price"
+                value={ formData.price }
+                onChange={handleChange}
+                label="Price (in NGN)"
+                labelPlacement="outside"
+                type="number"
+                placeholder="eg:5000"
+              />
+            </div>
+            <div className="col-span-3 ps-1">
+              <Input
+                name="quantity"
+                value={ formData.quantity }
+                onChange={handleChange}
+                label="Quantity"
+                labelPlacement="outside"
+                type="number"
+                placeholder="eg: 5"
+              />
+            </div>
+              </div>
+            </div> */}//*/}
