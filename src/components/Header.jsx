@@ -6,6 +6,7 @@ import useMainContext from "../hooks/useMainContext";
 import { dev_url } from "../utils/axios";
 import useLogout from "../hooks/useLogout";
 import AddLocation from "../pages/AddLocation";
+import { FaWallet } from "react-icons/fa6";
 
 
 
@@ -40,7 +41,13 @@ const Header = () =>
                 
                   <div className="w-full p-2">
                   <div>
-                    <p className="font-bold text-medium">{user?.name ? user.name :'Login/Signup' }</p>
+                      <div className="flex justify-between items-center">
+                        <p className="font-bold text-medium">{ user?.name ? user.name : 'Login/Signup' }</p>
+                        <Link to="profile" className="font-bold text-small px-2 py-1 hover:bg-neutral-200 border rounded-lg flex space-x-2 items-center" role="button">
+                          <FaWallet />
+                          <span>{user?.balance ? user.balancece :'0.00' }</span>
+                        </Link>
+                    </div>
                     <p className="text-sm">{ user?.email ? user.email : "example@email.com" }</p>
                   </div>
                   <hr className="my-2 border"/>

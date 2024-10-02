@@ -17,6 +17,7 @@ const Sidebar = () =>
           <div className="flex flex-col gap-2">
             <Link to="/" className="border rounded-lg p-2 border-neutral-400 hover:bg-neutral-500 hover:text-neutral-200 text-medium font-bold capitalize">Ecommerce</Link>
             <Link to="/product" className="border rounded-lg p-2 border-neutral-400 hover:bg-neutral-500 hover:text-neutral-200 text-medium font-bold capitalize">Product List</Link>
+            <Link to="/suplementry" className="border rounded-lg p-2 border-neutral-400 hover:bg-neutral-500 hover:text-neutral-200 text-medium font-bold capitalize">Suplementry List</Link>
             <Link to="/add" className="border rounded-lg p-2 border-neutral-400 hover:bg-neutral-500 hover:text-neutral-200 text-medium font-bold capitalize">Add Product</Link>
             <Link to="/category" className="border rounded-lg p-2 border-neutral-400 hover:bg-neutral-500 hover:text-neutral-200 text-medium font-bold capitalize">Add Category</Link>
             <Link to="/sub-category" className="border rounded-lg p-2 border-neutral-400 hover:bg-neutral-500 hover:text-neutral-200 text-medium font-bold capitalize">Add sub category</Link>

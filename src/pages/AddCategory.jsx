@@ -1,7 +1,7 @@
-import { Button, Input, Textarea,Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
+import { Button, Input, Textarea,Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent, Spinner } from "@nextui-org/react";
 import { BsGear, BsSearch } from "react-icons/bs";
 import { FaPencil, FaTrash } from "react-icons/fa6";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useMainContext from "../hooks/useMainContext";
 
@@ -15,7 +15,9 @@ const AddCategory = () =>
   const [ slug, setSlug ] = useState( "" );
   const axiosPrivate = useAxiosPrivate()
   const { openToast, closeToast } = useMainContext();
-  const [loading,setLoading] = useState(false)
+  const [ loading, setLoading ] = useState( false );
+  const [ isLoading, setIsloading ] = useState( true )
+  const [categories,setCategories] = useState([])
 
   const handleChange = ( e,setState ) =>
   {
@@ -58,7 +60,8 @@ const AddCategory = () =>
         headers: {
           "Content-Type":"application/json"
         }
-      })
+      } )
+      setCategories( prev => [ { ...res.data.data.category, subCategory: [] }, ...prev ] );
       openToast( res.data.message, "success" );
       setFormData({
         name: "",
@@ -77,159 +80,24 @@ const AddCategory = () =>
   }
 
 
-  const category = [
+  useEffect( () =>
+  {
+    ( async() =>
     {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },{
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
+      try {
+        const res = await axiosPrivate.get( '/category' );
+        const result = res.data
+        setCategories( result.data.category )
+      } catch (error) {
+        console.error(error);
+      }finally{
+        setIsloading(false)
+      }
+    })()
+  })
 
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Bag",
-      subcategory: [ "Shopping bag", "gym bag", "purse", "wallet" ],
-      productAmount: 20,
-      status: true,
-    },
 
-  ]
+
   return (
     <div className="p-4 w-full h-full overflow-y-auto">
       <p className="font-extrabold text-xl capitalize text-primary">Category</p>
@@ -293,28 +161,29 @@ const AddCategory = () =>
               endContent={ <BsSearch role="button" size={ 18 } />}
             />
           </div>
-          <Table aria-label="Product List">
+          <Table aria-label="Caategory List"
+          isHeaderSticky
+          classNames={{
+            base: "max-h-[75dvh] overflow-scroll",
+            table: "max-h-[70dvh] overflow-auto",
+          }}>
             <TableHeader>
               <TableColumn>Name</TableColumn>
               <TableColumn>Sub Category</TableColumn>
-              <TableColumn>Product</TableColumn>
-              <TableColumn>Status</TableColumn>
               <TableColumn>Action</TableColumn>
             </TableHeader>
-            <TableBody>
-              { category.map( item => (
-                <TableRow key={ category.indexOf( item ) + 1 }>
+            <TableBody isLoading={ isLoading } loadingContent={ <Spinner color="primary" /> } emptyContent={ categories.length === 0 ? "No Product to display" : null }>
+              { categories.map( item => (
+                <TableRow key={ item.id }>
                   <TableCell>{ item.name }</TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-2">
-                      <p className="bg-primary p-2 rounded-lg text-default">{ item.subcategory.length }</p>
-                      { item.subcategory.map( sub => (
-                          <p className="bg-neutral-200 p-2 rounded-lg"key={item.subcategory.indexOf(sub)}>{ sub }</p>
+                      <p className="bg-primary p-2 rounded-lg text-default">{ item.subCategory.length }</p>
+                      { item.subCategory.map( sub => (
+                          <p className="bg-neutral-200 p-2 rounded-lg" key={item.subCategory.id}>{ sub.name }</p>
                       ))}
                     </div>
                   </TableCell>
-                  <TableCell>{ item.productAmount }</TableCell>
-                  <TableCell className={item.status ? "text-success" :"text-danger"}>{ item.status ? "Active" : "Inactive" }</TableCell>
                   <TableCell>
                     <Popover showArrow placement="bottom" color="default">
                       <PopoverTrigger>

@@ -2,6 +2,7 @@ import {Button, Image, Popover, PopoverContent, PopoverTrigger} from "@nextui-or
 import { BsThreeDotsVertical } from "react-icons/bs";
 import useMainContext from "../hooks/useMainContext";
 import { dev_url } from "../utils/axios";
+import { FaWallet } from "react-icons/fa6";
 
 const Profile = () =>
 {
@@ -49,7 +50,22 @@ const Profile = () =>
           </div>
         </div>
         <div className="border col-span-full lg:col-span-4 p-4 rounded-lg">
-          <p className="font-bold text-lg capitalize">Account Details</p>
+          <div className="flex items-center justify-between">
+            <p className="font-bold text-lg capitalize">Account Details</p>
+            <Popover shoArrow placement="button" color="daefault">
+              <PopoverTrigger>
+                <Button variant="ghost" size="sm" className="flex space-x-2">
+                  <FaWallet />
+                  <span>{user?.balance ? user.balancece :'0.00' }</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <p className="flex items-center space-x-4">
+                  <
+                </p>
+              </PopoverContent>
+            </Popover>
+          </div>
           <p className="font-bold text-tiny text-neutral-500">From your account you can easily view and track orders. You can manage and change your account information like address, contact information and history of orders.</p>
 
           {/* Informations */ }

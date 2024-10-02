@@ -3,7 +3,7 @@ import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Image, 
 import { BsGear, BsSearch } from "react-icons/bs";
 import { FaPencil, FaTrash } from "react-icons/fa6";
 import { dev_url } from "../utils/axios";
-import useProductList from "../hooks/useProductList";
+import useSuplementryList from "../hooks/useSuplementryList";
 import { useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useMainContext from "../hooks/useMainContext";
@@ -18,7 +18,8 @@ const DeleteModal = ({isOpen,onOpenChange,id,setId}) =>
   const deleteItem = async ( onClose ) =>
   {
     try {
-      const res = await axiosPrivate.delete( `/product/${ id }` )
+      console.log( id );
+      const res = await axiosPrivate.delete( `/suplementry/${ id }` )
       const result = res.data
       openToast(result.message, "success")
       onClose()
@@ -50,9 +51,9 @@ const DeleteModal = ({isOpen,onOpenChange,id,setId}) =>
   )
 }
 
-const ProductList = () =>
+const Supplementry = () =>
 {
-  const{products, isLoading,hasMore} = useProductList()
+  const { products, isLoading, hasMore } = useSuplementryList();
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const [ id, setId ] = useState( "" )
   const [openPopoverId, setOpenPopoverId] = useState(null);
@@ -68,12 +69,11 @@ const ProductList = () =>
     setOpenPopoverId(openPopoverId === id ? null : id); // Toggle popover for the specific item
   };
 
-
   
+
   return (
     <div className="p-4 w-full h-full overflow-y-auto">
       <p className="font-extrabold text-xl capitalize text-primary">Product List</p>
-
       {/* Table */ }
       <div className="border rounded-lg p-3 mt-4">
         <div className="border-b my-4 flex items-center justify-between py-2">
@@ -106,8 +106,6 @@ const ProductList = () =>
             <TableColumn key="name">Name</TableColumn>
             <TableColumn key="price">Price</TableColumn>
             <TableColumn key="quantity">Quantity</TableColumn>
-            <TableColumn key="inStock">Status</TableColumn>
-            <TableColumn key="createdAt">Date</TableColumn>
             <TableColumn>Action</TableColumn>
           </TableHeader>
           <TableBody isLoading={ isLoading } loadingContent={ <Spinner color="primary" /> } emptyContent={ products.items.length === 0 ? "No Product to display" : null } className="align-top">
@@ -120,8 +118,6 @@ const ProductList = () =>
                 <TableCell>{ item.name }</TableCell>
                 <TableCell>&#8358;{ item.price }</TableCell>
                 <TableCell>{ item.quantity }</TableCell>
-                <TableCell className={item.inStock ? "capitalize text-success"  : "capitalize text-danger"}>{ item.inStock ? "available" : "unavailable" }</TableCell>
-                <TableCell>{ item.createdAt }</TableCell>
                 <TableCell>
                   <Popover showArrow placement="bottom" color="default" onClose={() => setOpenPopoverId(null)} isOpen={openPopoverId === item.id}>
                     <PopoverTrigger>
@@ -139,46 +135,12 @@ const ProductList = () =>
                 </TableCell>
               </TableRow>
             ) ) }
-            
-            
           </TableBody>
         </Table>
+        <DeleteModal isOpen={isOpen} onOpenChange={onOpenChange} id={id} setId={setId}/>
       </div>
-      <DeleteModal isOpen={isOpen} onOpenChange={onOpenChange} id={id} setId={setId}/>
     </div>
   )
 }
 
-export default ProductList;
-
-
-
-{/* { products.map( item => (
-              <TableRow key={ products.indexOf( item ) + 1 }>
-                <TableCell>
-                  <Image src={item.image} className="w-10 h-10 object-contain" />
-                </TableCell>
-                <TableCell>{ item.name }</TableCell>
-                <TableCell>&#8358;{ item.price }</TableCell>
-                <TableCell>{ item.discount }% off</TableCell>
-                <TableCell>{ item.purchased }</TableCell>
-                <TableCell>{ item.stock }</TableCell>
-                <TableCell className={item.status.toLowerCase() === "active" ? "capitalize text-success" : item.status.toLowerCase() === "pending" ? "capitalize text-warning" : "capitalize text-danger"}>{ item.status }</TableCell>
-                <TableCell>{ item.date }</TableCell>
-                <TableCell>
-                  <Popover showArrow placement="bottom" color="default">
-                    <PopoverTrigger>
-                      <Button variant="ghost" size="sm">
-                        <BsGear size={18}/>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="flex flex-col space-y-2">
-                        <Button variant="flat" color="primary"><FaPencil/> Edit</Button>
-                        <Button variant="flat" color="danger"><FaTrash/> Delete</Button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </TableCell>
-              </TableRow>
-            ))} */}
+export default Supplementry

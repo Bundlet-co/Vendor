@@ -126,7 +126,8 @@ const AddProduct = () =>
         data.append( "suplementryImage", item.file );
       })
       data.append( "opening_date", date )
-      data.append( "suplementry_product", JSON.stringify( complementryData ) )
+      // eslint-disable-next-line no-unused-vars
+      data.append( "suplementry_product", JSON.stringify( complementryData.map(({file,...rest})=> rest) ) )
       data.append("variation", JSON.stringify(variation))
 
       Object.entries( formData ).forEach( ( [ key, value ] ) =>
@@ -142,8 +143,8 @@ const AddProduct = () =>
       } )
       
       console.log(data);
-      return
-      const res = await axiosPrivate.post('/product',{...data,suplementry_product:complementryData,variation},{
+      
+      const res = await axiosPrivate.post('/product',data,{
         headers:{"Content-Type":"multipart/form-data"}
       } )
       const result = await res.data.data.product
@@ -155,18 +156,14 @@ const AddProduct = () =>
         slug: [],
         description: "",
         price: "",
-        color: [],
-        size: [],
         quantity: "",
         discount_type: "",
         discount_amount: "",
         available_till: "",
         delivery_duration: "",
         dispatch_location: "",
-        tags: [],
-        variationType: "unit",
-        variationPrice: "",
-        variationAmount:""
+        unit: "",
+        product_type:""
       })
       setHero( thumb )
       setImg1( thumb )
@@ -174,10 +171,11 @@ const AddProduct = () =>
       setImg3( thumb )
       setImg4( thumb )
       setImg5( thumb )
-      
+      setVariation( [] )
+      setComplemetryData([])
     } catch (error) {
       console.error( error );
-      openToast(error.response.data.message,"error")
+      openToast(error.response.data,"error")
     } finally {
       setLoading( false );
       setTimeout( () =>
@@ -357,13 +355,13 @@ const AddProduct = () =>
               />
             </div>
             <div className="col-span-3">
-              <Select name="type" label="Product Type" placeholder="Enter product type" labelPlacement="outside">
+              <Select name="product_type" label="Product Type" placeholder="Enter product type" labelPlacement="outside" selectedKeys={[formData.product_type]} onChange={handleChange}>
                 <SelectItem key="physical">Physical</SelectItem>
                 <SelectItem key="breakable">Breakable</SelectItem>
               </Select>
             </div>
             <div className="col-span-3">
-              <Select name="variationType" label="Units" selectedKeys={ [ formData.variationType ] } onChange={ handleChange } placeholder="select a unit" labelPlacement="outside">
+              <Select name="unit" label="Units" selectedKeys={ [ formData.unit ] } onChange={ handleChange } placeholder="select a unit" labelPlacement="outside">
                 <SelectItem key="unit">unit</SelectItem>
                 <SelectItem key="kg">kg</SelectItem>
                 <SelectItem key="g">g</SelectItem>
