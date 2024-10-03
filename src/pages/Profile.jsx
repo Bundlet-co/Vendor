@@ -1,5 +1,5 @@
 import {Button, Image, Popover, PopoverContent, PopoverTrigger} from "@nextui-org/react"
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { BsBoxArrowDown, BsBoxArrowUp, BsThreeDotsVertical } from "react-icons/bs";
 import useMainContext from "../hooks/useMainContext";
 import { dev_url } from "../utils/axios";
 import { FaWallet } from "react-icons/fa6";
@@ -59,10 +59,18 @@ const Profile = () =>
                   <span>{user?.balance ? user.balancece :'0.00' }</span>
                 </Button>
               </PopoverTrigger>
-              <PopoverContent>
-                <p className="flex items-center space-x-4">
-                  <
-                </p>
+              <PopoverContent className="w-40">
+                <div className="w-full p-2">
+                  <p className="flex items-center space-x-2 hover:bg-neutral-300 rounded-lg p-2" role="button">
+                    <BsBoxArrowDown />
+                    <span>Deposit</span>
+                  </p>
+                  <hr className="my-1 border" />
+                  <p className="flex items-center space-x-2 hover:bg-neutral-300 rounded-lg p-2" role="button">
+                    <BsBoxArrowUp />
+                    <span>Withdraw</span>
+                  </p>
+                </div>
               </PopoverContent>
             </Popover>
           </div>

@@ -1,12 +1,56 @@
-import { Button, Input, Textarea,Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent, Spinner } from "@nextui-org/react";
+/* eslint-disable react/prop-types */
+import { Button, Input, Textarea,Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent, Spinner,Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 import { BsGear, BsSearch } from "react-icons/bs";
 import { FaPencil, FaTrash } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useMainContext from "../hooks/useMainContext";
 
+
+const DeleteModal = ({isOpen,onOpenChange,id,setId,setCategories}) =>
+{
+  const axiosPrivate = useAxiosPrivate();
+  const { openToast } = useMainContext();
+  const deleteItem = async ( onClose ) =>
+  {
+    try {
+      const res = await axiosPrivate.delete( `/category/${ id }` )
+      const result = res.data
+      openToast(result.message, "success")
+      onClose()
+      setCategories( prev => prev.filter(item=>item.id!==id))
+      setId( "" )
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  return (
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="bottom-center">
+      <ModalContent>
+        { onClose => (
+          <>
+            <ModalHeader>
+              Delete Categotry!
+            </ModalHeader>
+            <ModalBody>
+              <p>Are you sure you will like to delete this category?</p>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="flat" color="primary" onClick={onClose}>Cancle</Button>
+              <Button color="danger" onClick={()=>deleteItem(onClose)}><FaTrash /> {"Delete" }</Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  )
+}
+
 const AddCategory = () =>
 {
+  const { isOpen, onOpenChange, onOpen } = useDisclosure();
+  const [ id, setId ] = useState( "" )
+  const [openPopoverId, setOpenPopoverId] = useState(null);
   const [ formData, setFormData ] = useState( {
     name: "",
     slug: [],
@@ -17,7 +61,8 @@ const AddCategory = () =>
   const { openToast, closeToast } = useMainContext();
   const [ loading, setLoading ] = useState( false );
   const [ isLoading, setIsloading ] = useState( true )
-  const [categories,setCategories] = useState([])
+  const [ categories, setCategories ] = useState( [] );
+  const [editId,setEditId] = useState(null)
 
   const handleChange = ( e,setState ) =>
   {
@@ -56,19 +101,32 @@ const AddCategory = () =>
   {
     try {
       setLoading( true );
-      const res = await axiosPrivate.post( "/category", formData, {
-        headers: {
-          "Content-Type":"application/json"
-        }
-      } )
-      setCategories( prev => [ { ...res.data.data.category, subCategory: [] }, ...prev ] );
-      openToast( res.data.message, "success" );
+      if ( editId === null ) {
+        const res = await axiosPrivate.post( "/category", formData, {
+          headers: {
+            "Content-Type":"application/json"
+          }
+        } )
+        setCategories( prev => [ { ...res.data.data.category, subCategory: [] }, ...prev ] );
+        openToast( res.data.message, "success" );
+        setFormData({
+          name: "",
+          slug: [],
+          description: ""
+        } )
+        return;
+      }
+      const res = await axiosPrivate.patch( `/category/${editId}`, formData );
+      setCategories( prev => prev.map( ( category ) => category._id === editId ? {...res.data.data.category} : category))
+      setEditId( null )
       setFormData({
-        name: "",
-        slug: [],
-        description: ""
-      })
-    } catch (error) {
+          name: "",
+          slug: [],
+          description: ""
+        } )
+      openToast( res.data.message, "success" );
+    } catch ( error ) {
+      console.log(error);
       openToast(error.response.data.message,"error")
     } finally {
       setLoading( false );
@@ -78,6 +136,28 @@ const AddCategory = () =>
       },3000)
     }
   }
+
+  const showEdit = ( id ) =>
+  {
+    setEditId( id );
+    const category = categories.find( category => category.id === id );
+    setFormData( {
+      name: category.name,
+      slug: category.slug,
+      description: category.description
+    } );
+  }
+
+  const deleteItem = ( onOpen,id ) =>
+  {
+    setId( id )
+    setOpenPopoverId(openPopoverId === id ? null : id);
+    onOpen()
+  }
+
+  const togglePopover = (id) => {
+    setOpenPopoverId(openPopoverId === id ? null : id); // Toggle popover for the specific item
+  };
 
 
   useEffect( () =>
@@ -149,7 +229,7 @@ const AddCategory = () =>
               />
             </div>
             <div className="w-full my-4">
-              <Button color="primary" variant="flat" isLoading={ loading } onClick={ submit }>{ loading ? "Submitting" : "submit" }</Button>
+              <Button color="primary" variant="flat" isLoading={ loading } onClick={ submit }>{ editId !== null ? "Update" : "Submit" }</Button>
             </div>
           </div>
         </div>
@@ -185,25 +265,26 @@ const AddCategory = () =>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Popover showArrow placement="bottom" color="default">
-                      <PopoverTrigger>
-                        <Button variant="ghost" size="sm">
-                          <BsGear size={18}/>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <div className="flex flex-col space-y-2">
-                          <Button variant="flat" color="primary"><FaPencil/> Edit</Button>
-                          <Button variant="flat" color="danger"><FaTrash/> Delete</Button>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                    <Popover showArrow placement="bottom" color="default" onClose={() => setOpenPopoverId(null)} isOpen={openPopoverId === item.id}>
+                    <PopoverTrigger>
+                      <Button variant="ghost" size="sm" onClick={() => togglePopover(item.id)}>
+                        <BsGear size={18}/>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <div className="flex flex-col space-y-2">
+                        <Button variant="flat" color="primary" onClick={()=>showEdit(item.id)}><FaPencil/> Edit</Button>
+                        <Button variant="flat" color="danger" onClick={()=>deleteItem(onOpen,item.id)}><FaTrash/> Delete</Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
+        <DeleteModal id={ id } isOpen={ isOpen } onOpenChange={ onOpenChange } setId={ setId } setCategories={ setCategories } />
       </div>
     </div>
   )

@@ -1,13 +1,56 @@
-import { Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent, Select, SelectItem } from "@nextui-org/react";
+import { Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent, Select, SelectItem,Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { BsGear, BsSearch } from "react-icons/bs";
 import { FaPencil, FaTrash } from "react-icons/fa6";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useMainContext from "../hooks/useMainContext";
 
+
+const DeleteModal = ({isOpen,onOpenChange,id,setId,setCategories}) =>
+{
+  const axiosPrivate = useAxiosPrivate();
+  const { openToast } = useMainContext();
+  const deleteItem = async ( onClose ) =>
+  {
+    try {
+      const res = await axiosPrivate.delete( `/category/${ id }` )
+      const result = res.data
+      openToast(result.message, "success")
+      onClose()
+      setCategories( prev => prev.filter(item=>item.id!==id))
+      setId( "" )
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  return (
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="bottom-center">
+      <ModalContent>
+        { onClose => (
+          <>
+            <ModalHeader>
+              Delete Categotry!
+            </ModalHeader>
+            <ModalBody>
+              <p>Are you sure you will like to delete this category?</p>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="flat" color="primary" onClick={onClose}>Cancle</Button>
+              <Button color="danger" onClick={()=>deleteItem(onClose)}><FaTrash /> {"Delete" }</Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  )
+}
+
 const AddSubcategory = () =>
 {
+  const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const [ categories, setCategories ] = useState( [] );
+    const [ id, setId ] = useState( "" )
+  const [openPopoverId, setOpenPopoverId] = useState(null);
   const [ formData, setFormData ] = useState( {
     name: "",
     slug: [],
@@ -17,6 +60,8 @@ const AddSubcategory = () =>
   const axiosPrivate = useAxiosPrivate()
   const { openToast, closeToast } = useMainContext();
   const [ loading, setLoading ] = useState( false )
+  const [ isLoading, setIsloading ] = useState( true );
+  const [editId,setEditId] = useState(null)
   
     const handleChange = ( e,setState ) =>
   {
@@ -77,39 +122,46 @@ const AddSubcategory = () =>
       },3000)
     }
   }
-  const category = [
-    {
-      name: "Cooler",
-      category:[ "Electronics"],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Cooler",
-      category:[ "Electronics"],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Cooler",
-      category:[ "Electronics"],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Cooler",
-      category:[ "Electronics"],
-      productAmount: 20,
-      status: true,
-    },
-    {
-      name: "Cooler",
-      category:[ "Electronics"],
-      productAmount: 20,
-      status: true,
-    },
-  ] 
 
+    const showEdit = ( id ) =>
+  {
+    setEditId( id );
+    const category = categories.find( category => category.id === id );
+    setFormData( {
+      name: category.name,
+      slug: category.slug,
+      description: category.description
+    } );
+  }
+
+  const deleteItem = ( onOpen,id ) =>
+  {
+    setId( id )
+    setOpenPopoverId(openPopoverId === id ? null : id);
+    onOpen()
+  }
+
+  const togglePopover = (id) => {
+    setOpenPopoverId(openPopoverId === id ? null : id); // Toggle popover for the specific item
+  };
+
+  useEffect( () =>
+  {
+    ( async() =>
+    {
+      try {
+        const res = await axiosPrivate.get( '/subcategory' );
+        const result = res.data
+        setCategories( result.data.category )
+      } catch (error) {
+        console.error(error);
+      }finally{
+        setIsloading(false)
+      }
+
+    })()
+  })
+console.log(categories);
   useEffect( () =>
   {
     const getCategories = async () =>{
@@ -193,14 +245,14 @@ const AddSubcategory = () =>
               <TableColumn>Action</TableColumn>
             </TableHeader>
             <TableBody>
-              { category.map( item => (
-                <TableRow key={ category.indexOf( item ) + 1 }>
+              { categories.map( item => (
+                <TableRow key={ item.id }>
                   <TableCell>{ item.name }</TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-2">
-                      <p className="bg-primary p-2 rounded-lg text-default">{ item.category.length }</p>
-                      { item.category.map( sub => (
-                          <p className="bg-neutral-200 p-2 rounded-lg"key={item.category.indexOf(sub)}>{ sub }</p>
+                      <p className="bg-primary p-2 rounded-lg text-default">{ item.slug.length }</p>
+                      { item.slug.map( sub => (
+                          <p className="bg-neutral-200 p-2 rounded-lg"key={item.slug.indexOf(sub)}>{ sub }</p>
                       ))}
                     </div>
                   </TableCell>
@@ -226,6 +278,7 @@ const AddSubcategory = () =>
             </TableBody>
           </Table>
         </div>
+        <DeleteModal id={ id } isOpen={ isOpen } onOpenChange={ onOpenChange } setId={ setId } setCategories={ setCategories } />
       </div>
     </div>
   )
