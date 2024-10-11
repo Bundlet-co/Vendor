@@ -147,23 +147,6 @@ const AddSubcategory = () =>
 
   useEffect( () =>
   {
-    ( async() =>
-    {
-      try {
-        const res = await axiosPrivate.get( '/subcategory' );
-        const result = res.data
-        setCategories( result.data.category )
-      } catch (error) {
-        console.error(error);
-      }finally{
-        setIsloading(false)
-      }
-
-    })()
-  })
-console.log(categories);
-  useEffect( () =>
-  {
     const getCategories = async () =>{
       try {
         const res = await axiosPrivate.get( '/category' );
