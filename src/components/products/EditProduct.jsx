@@ -1,50 +1,51 @@
+/* eslint-disable react/prop-types */
 import { Input, Select, SelectSection,SelectItem, Textarea, DatePicker, Button, Image, Accordion ,AccordionItem} from "@nextui-org/react";
 import { FaPencil } from "react-icons/fa6";
-import thumb from "../Assets/img/thumb.png"
-import { BsPlus } from "react-icons/bs";
+import thumb from "../../Assets/img/thumb.png"
+import { BsArrowLeftCircle, BsPlus } from "react-icons/bs";
 import { useEffect, useState } from "react";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import {getLocalTimeZone, today} from "@internationalized/date";
-import useMainContext from "../hooks/useMainContext";
-import Complementry from "../components/products/Complementry";
-import Variation from "../components/products/Variation";
+import useMainContext from "../../hooks/useMainContext";
+import Variation from "../../components/products/Variation";
+import { dev_url } from "../../utils/axios";
 
-const AddProduct = () =>
+const EditProduct = ({products,id, setEditId,updatelist}) =>
 {
   const axiosPrivate = useAxiosPrivate();
+  const [product,setProduct] = useState(products.items.find( item => item.id === id ))
   const { openToast, closeToast } = useMainContext();
-  const [ images, setImages ] = useState( [] );
-  const [ img1, setImg1 ] = useState( thumb );
-  const [ img2, setImg2 ] = useState( thumb );
-  const [ img3, setImg3 ] = useState( thumb );
-  const [ img4, setImg4 ] = useState( thumb );
-  const [ img5, setImg5 ] = useState( thumb );
-  const [ hero, setHero ] = useState( thumb );
-  const [ dp, setDp ] = useState( thumb );
+  const [ images, setImages ] = useState( product.images );
+  const [ img1, setImg1 ] = useState( product.images[0] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb );
+  const [ img2, setImg2 ] = useState( product.images[1] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb  );
+  const [ img3, setImg3 ] = useState( product.images[2] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb  );
+  const [ img4, setImg4 ] = useState( product.images[3] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb );
+  const [ img5, setImg5 ] = useState( product.images[4] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb  );
+  const [ hero, setHero ] = useState( product.dp ? `${dev_url.replace("/merchant","")}/${product.dp.replace("public/","")}` : thumb  );
+  const [ dp, setDp ] = useState( product.dp );
   const [ slug, setSlug ] = useState( "" )
-  const [ date, setDate ] = useState( today(getLocalTimeZone()) );
+  const [ date, setDate ] = useState( today(getLocalTimeZone()));
   const [ loading, setLoading ] = useState( false )
   const [ categories, setCategories ] = useState( [] );
   const [ dispatch_location, setDispatch_location ] = useState( [] );
-  const [ complementryData, setComplemetryData ] = useState( [] );
-  const [variation,setVariation] = useState([])
+  const [variation,setVariation] = useState([...product.variation])
 
 
 
   const [ formData, setFormData ] = useState( {
-    name: "",
-    category: "",
-    slug: [],
-    description: "",
-    price: "",
-    quantity: "",
-    discount_type: "",
-    discount_amount: "",
-    available_till: "",
-    delivery_duration: "",
-    dispatch_location: "",
-    unit: "",
-    product_type:""
+    name: product.name,
+    category: product.category ,
+    slug: product.slug,
+    description: product.description,
+    price: product.price,
+    quantity: product.quantity,
+    discount_type: product.discount_type,
+    discount_amount: product.discount_amount,
+    available_till: product.available_till,
+    delivery_duration: product.delivery_duration,
+    dispatch_location: product.dispatch_location,
+    unit: product.unit,
+    product_type: product.product_type
   } )
 
   const handleChange = ( e,setState ) =>
@@ -112,66 +113,80 @@ const AddProduct = () =>
     }
   }
 
-  const submit = async()=>{
+
+  const dpUpdate = async () =>
+  {
     try {
-      setLoading(true)
       const data = new FormData()
-      data.append( 'dp', dp );
+      data.append( "dp", dp );
+      const res = await axiosPrivate.patch( `/product/${ id }`, data )
+      const result = res.data.data.product 
+      setDp(result.dp)
+      updatelist(result)
+    } catch (error) {
+      console.error( error );
+      openToast(error.response.data,"error")
+    } finally {
+      setLoading( false );
+      setTimeout( () =>
+      {
+        closeToast()
+      },3000)
+    }
+  }
+
+  const imageUpdate = async () =>
+  {
+    try {
+      const data = new FormData()
       images.forEach( image =>
       {
         data.append('images',image)
       } )
-      complementryData.forEach( item =>
-      {
-        data.append( "suplementryImage", item.file );
-      })
-      data.append( "opening_date", date )
-      // eslint-disable-next-line no-unused-vars
-      data.append( "suplementry_product", JSON.stringify( complementryData.map(({file,...rest})=> rest) ) )
-      data.append("variation", JSON.stringify(variation))
-
-      Object.entries( formData ).forEach( ( [ key, value ] ) =>
-      {
-        if ( Array.isArray( value ) ) {
-          value.forEach( item =>
-          {
-            data.append(`${key}[]`,item)
-          })
-        } else {
-          data.append( key, value );
-        }
-      } )
-      
-      
-      const res = await axiosPrivate.post('/product',data,{
-        headers:{"Content-Type":"multipart/form-data"}
-      } );
-      await res.data.data.product
-      openToast(res.data.message,"success")
-      setFormData( {
-        name: "",
-        category: "",
-        slug: [],
-        description: "",
-        price: "",
-        quantity: "",
-        discount_type: "",
-        discount_amount: "",
-        available_till: "",
-        delivery_duration: "",
-        dispatch_location: "",
-        unit: "",
-        product_type:""
-      } )
-      setImages([])
       setHero( thumb )
       setImg1( thumb )
       setImg2( thumb )
       setImg3( thumb )
       setImg4( thumb )
       setImg5( thumb )
-      setVariation( [] )
-      setComplemetryData([])
+      setImages([])
+    }catch (error) {
+      console.error( error );
+      openToast(error.response.data,"error")
+    } finally {
+      setLoading( false );
+      setTimeout( () =>
+      {
+        closeToast()
+      },3000)
+    }
+  }
+
+  const submit = async()=>{
+    try {
+      setLoading(true)
+      const res = await axiosPrivate.put(`/product/${id}`,{...formData,variation,opening_date:date.toString()})
+      const result = res.data.data.product 
+      
+      updatelist(result)
+      openToast(res.data.message,"success")
+      setFormData( {
+        name: result.name,
+        category: result.category,
+        slug: result.slug,
+        description: result.description,
+        price: result.price,
+        quantity: result.quantity,
+        discount_type: result.discount_type,
+        discount_amount: result.discount_amount,
+        available_till: result.available_till,
+        delivery_duration: result.delivery_duration,
+        dispatch_location: result.dispatch_location,
+        unit: result.unit,
+        product_type:result.product_type
+      })
+      
+      setVariation( [...result.variation] )
     } catch (error) {
       console.error( error );
       openToast(error.response.data,"error")
@@ -186,6 +201,14 @@ const AddProduct = () =>
 
   useEffect( () =>
   {
+    const data = products.items.find( item => item.id === id );
+    setProduct({...data})
+  }, [ products, id ] )
+  
+  
+
+  useEffect( () =>
+  {
     const getCategories = async () =>{
       try {
         const res = await axiosPrivate.get( '/category' );
@@ -195,6 +218,8 @@ const AddProduct = () =>
         console.error(error)
       }
     }
+
+    
 
     const getDispatchLocations = async () =>
     {
@@ -209,11 +234,18 @@ const AddProduct = () =>
     
     getCategories();
     getDispatchLocations();
-  },[axiosPrivate])
+  }, [ axiosPrivate ] )
+  const back = () =>
+    {
+      setEditId(null)
+    }
 
-    return (
+  return (
     <div className="p-4 w-full h-full overflow-y-auto">
-      <p className="font-extrabold text-xl capitalize text-primary">Add Product</p>
+      <div className="flex space-x-4 items-center">
+        <BsArrowLeftCircle size={24} onClick={back} role="button"/>
+        <p className="font-extrabold text-xl capitalize text-primary">Edit Product</p>
+      </div>
       <div className="grid grid-cols-6 gap-4 rounded-lg my-4 p-3 ">
         <div className="col-span-full lg:col-span-3 border rounded-lg p-4 max-h-[100dvh] overflow-y-auto">
           {/* Hero Image */}
@@ -228,6 +260,8 @@ const AddProduct = () =>
               </div>
             </div>
           </div>
+          <Button onClick={dpUpdate} className="my-4">Save</Button>
+          <hr />
           {/* Other Image */}
           <div className="grid grid-cols-2 xl:grid-cols-3 gap-4 my-4">
             {/* Image 1 */}
@@ -291,11 +325,7 @@ const AddProduct = () =>
               </div>
             </div>
           </div>
-          <Accordion>
-            <AccordionItem key="1" aria-label="Supplementary product" title="Complementary Product" indicator={<BsPlus size={24} className="font-extrabold"/>}>
-              <Complementry submittedData={complementryData} setSubmittedData={setComplemetryData}/>
-            </AccordionItem>
-          </Accordion>
+          
         </div>
 
         <div className="col-span-full lg:col-span-3 border rounded-lg p-4 max-h-[100dvh] overflow-y-auto">
@@ -471,4 +501,4 @@ const AddProduct = () =>
   )
 }
 
-export default AddProduct;
+export default EditProduct;

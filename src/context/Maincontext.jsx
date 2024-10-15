@@ -61,20 +61,15 @@ export const MainProvider = ( { children } ) =>
     } catch ( error ) {
       setStatus("error")
       if ( !error.response ) {
-        console.log( "No server response" );
         openToast("No server response","error")
       } else if ( error.response?.status === 400 ) {
-        console.log( "Bad request: Email and password missing" );
         openToast("Email and password missing","error")
       } else if ( error.response?.status === 404 ) {
-        console.log( "Not a Vendor" );
         openToast("Not a Vendor" , "error")
       } else if ( error.response?.status === 401 ) {
-        console.log( "Invalid credentilas" );
         setMessage(  );
         openToast("Invalid credentilas","error")
       } else {
-        console.log( error.response.data.message );
         openToast(error.response.data.message, "error")
       }
     } finally {

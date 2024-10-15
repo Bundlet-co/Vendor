@@ -31,7 +31,6 @@ const AddLocation = ( { isOpen, onOpenChange } ) =>
     try {
       setLoading(true)
       const res = await axiosPrivate.post( '/dispatch', formData )
-      console.log( res.data.data );
       openToast( res.data.message, "success" )
       onClose()
     } catch (error) {

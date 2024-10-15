@@ -117,7 +117,7 @@ const AddCategory = () =>
         return;
       }
       const res = await axiosPrivate.patch( `/category/${editId}`, formData );
-      setCategories( prev => prev.map( ( category ) => category._id === editId ? {...res.data.data.category} : category))
+      setCategories( prev => prev.map( ( category ) => category.id === editId ? {...res.data.data.category} : category))
       setEditId( null )
       setFormData({
           name: "",
@@ -126,7 +126,6 @@ const AddCategory = () =>
         } )
       openToast( res.data.message, "success" );
     } catch ( error ) {
-      console.log(error);
       openToast(error.response.data.message,"error")
     } finally {
       setLoading( false );
@@ -174,7 +173,7 @@ const AddCategory = () =>
         setIsloading(false)
       }
     })()
-  })
+  },[axiosPrivate])
 
 
 

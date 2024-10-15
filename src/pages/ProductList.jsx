@@ -7,13 +7,12 @@ import useProductList from "../hooks/useProductList";
 import { useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useMainContext from "../hooks/useMainContext";
-import { useNavigate } from "react-router-dom";
+import EditProduct from "../components/products/EditProduct";
 
 
-const DeleteModal = ({isOpen,onOpenChange,id,setId}) =>
+const DeleteModal = ({isOpen,onOpenChange,id,setId,products}) =>
 {
   const axiosPrivate = useAxiosPrivate();
-  const navigate = useNavigate()
   const { openToast } = useMainContext();
   const deleteItem = async ( onClose ) =>
   {
@@ -23,7 +22,7 @@ const DeleteModal = ({isOpen,onOpenChange,id,setId}) =>
       openToast(result.message, "success")
       onClose()
       setId( "" )
-      navigate(0)
+      products.remove(id)
     } catch (error) {
       console.error(error);
     }
@@ -55,8 +54,8 @@ const ProductList = () =>
   const{products, isLoading,hasMore} = useProductList()
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const [ id, setId ] = useState( "" )
-  const [openPopoverId, setOpenPopoverId] = useState(null);
-  
+  const [ openPopoverId, setOpenPopoverId ] = useState( null );
+  const [ editId, setEditId ] = useState( null );
   const deleteItem = ( onOpen,id ) =>
   {
     setId( id )
@@ -68,11 +67,18 @@ const ProductList = () =>
     setOpenPopoverId(openPopoverId === id ? null : id); // Toggle popover for the specific item
   };
 
+  const updatelist = (result) =>
+  {
+    products.update( result.id, result )
+  }
+
 
   
   return (
     <div className="p-4 w-full h-full overflow-y-auto">
-      <p className="font-extrabold text-xl capitalize text-primary">Product List</p>
+      { editId === null && (
+        <>
+          <p className="font-extrabold text-xl capitalize text-primary">Product List</p>
 
       {/* Table */ }
       <div className="border rounded-lg p-3 mt-4">
@@ -131,7 +137,7 @@ const ProductList = () =>
                     </PopoverTrigger>
                     <PopoverContent>
                       <div className="flex flex-col space-y-2">
-                        <Button variant="flat" color="primary"><FaPencil/> Edit</Button>
+                        <Button variant="flat" color="primary" onClick={()=>setEditId(item.id)}><FaPencil/> Edit</Button>
                         <Button variant="flat" color="danger" onClick={()=>deleteItem(onOpen,item.id)}><FaTrash/> Delete</Button>
                       </div>
                     </PopoverContent>
@@ -144,41 +150,13 @@ const ProductList = () =>
           </TableBody>
         </Table>
       </div>
-      <DeleteModal isOpen={isOpen} onOpenChange={onOpenChange} id={id} setId={setId}/>
+        </>
+      ) }
+      { editId !== null && ( <EditProduct products={ products } id={ editId } setEditId={ setEditId } updatelist={ updatelist }/>)}
+      <DeleteModal isOpen={ isOpen } onOpenChange={ onOpenChange } id={ id } setId={ setId } products={ products }  />
     </div>
   )
 }
 
 export default ProductList;
 
-
-
-{/* { products.map( item => (
-              <TableRow key={ products.indexOf( item ) + 1 }>
-                <TableCell>
-                  <Image src={item.image} className="w-10 h-10 object-contain" />
-                </TableCell>
-                <TableCell>{ item.name }</TableCell>
-                <TableCell>&#8358;{ item.price }</TableCell>
-                <TableCell>{ item.discount }% off</TableCell>
-                <TableCell>{ item.purchased }</TableCell>
-                <TableCell>{ item.stock }</TableCell>
-                <TableCell className={item.status.toLowerCase() === "active" ? "capitalize text-success" : item.status.toLowerCase() === "pending" ? "capitalize text-warning" : "capitalize text-danger"}>{ item.status }</TableCell>
-                <TableCell>{ item.date }</TableCell>
-                <TableCell>
-                  <Popover showArrow placement="bottom" color="default">
-                    <PopoverTrigger>
-                      <Button variant="ghost" size="sm">
-                        <BsGear size={18}/>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="flex flex-col space-y-2">
-                        <Button variant="flat" color="primary"><FaPencil/> Edit</Button>
-                        <Button variant="flat" color="danger"><FaTrash/> Delete</Button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </TableCell>
-              </TableRow>
-            ))} */}

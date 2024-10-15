@@ -1,4 +1,5 @@
-import { Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent, Select, SelectItem,Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+/* eslint-disable react/prop-types */
+import { Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Popover, PopoverTrigger, PopoverContent, Select, SelectItem,Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Spinner } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { BsGear, BsSearch } from "react-icons/bs";
 import { FaPencil, FaTrash } from "react-icons/fa6";
@@ -13,7 +14,7 @@ const DeleteModal = ({isOpen,onOpenChange,id,setId,setCategories}) =>
   const deleteItem = async ( onClose ) =>
   {
     try {
-      const res = await axiosPrivate.delete( `/category/${ id }` )
+      const res = await axiosPrivate.delete( `/subcategory/${ id }` )
       const result = res.data
       openToast(result.message, "success")
       onClose()
@@ -60,6 +61,7 @@ const AddSubcategory = () =>
   const axiosPrivate = useAxiosPrivate()
   const { openToast, closeToast } = useMainContext();
   const [ loading, setLoading ] = useState( false )
+  const [subCategories,setSubCategories] = useState([])
   const [ isLoading, setIsloading ] = useState( true );
   const [editId,setEditId] = useState(null)
   
@@ -100,18 +102,35 @@ const AddSubcategory = () =>
   {
     try {
       setLoading( true );
-      console.log(formData);
-      const res = await axiosPrivate.post( "/subcategory", formData, {
-        headers: {
-          "Content-Type":"application/json"
-        }
-      })
-      openToast( res.data.message, "success" );
-      setFormData({
-        name: "",
-        slug: [],
-        description: ""
-      })
+      if (editId  === null ) {
+        const res = await axiosPrivate.post( "/subcategory", formData, {
+          headers: {
+            "Content-Type":"application/json"
+          }
+        })
+        openToast( res.data.message, "success" );
+        setFormData({
+          name: "",
+          slug: [],
+          description: ""
+        } )
+        setSubCategories(prev=>[res.data.data.category,...prev])
+        return;
+      } else {
+        const res = await axiosPrivate.patch( `/subcategory/${editId}`, formData, {
+          headers: {
+            "Content-Type":"application/json"
+          }
+        })
+        openToast( res.data.message, "success" );
+        setSubCategories(prev=> prev.map(category=> category.id === editId ? {...res.data.data.category}:category))
+        setFormData({
+          name: "",
+          slug: [],
+          description: ""
+        } )
+        setEditId( null );
+      }
     } catch (error) {
       openToast(error.response.data.message,"error")
     } finally {
@@ -126,11 +145,11 @@ const AddSubcategory = () =>
     const showEdit = ( id ) =>
   {
     setEditId( id );
-    const category = categories.find( category => category.id === id );
+      const subCat = subCategories.find( category => category.id === id );
     setFormData( {
-      name: category.name,
-      slug: category.slug,
-      description: category.description
+      name: subCat.name,
+      category_id: subCat.category_id,
+      slug:subCat.slug
     } );
   }
 
@@ -141,9 +160,6 @@ const AddSubcategory = () =>
     onOpen()
   }
 
-  const togglePopover = (id) => {
-    setOpenPopoverId(openPopoverId === id ? null : id); // Toggle popover for the specific item
-  };
 
   useEffect( () =>
   {
@@ -156,8 +172,22 @@ const AddSubcategory = () =>
         console.error(error)
       }
     }
+
+    const getSubCategory = async() => {
+      try {
+        const res = await axiosPrivate.get( '/subcategory' )
+        const result = res.data.data.category
+        setSubCategories( result );
+      } catch (error) {
+        console.error(error);
+      }
+      finally {
+        setIsloading(false)
+      }
+    }
     
     getCategories();
+    getSubCategory();
   },[axiosPrivate])
   
   return (
@@ -219,16 +249,19 @@ const AddSubcategory = () =>
               endContent={ <BsSearch role="button" size={ 18 } />}
             />
           </div>
-          <Table aria-label="Product List">
+          <Table aria-label="Caategory List"
+          isHeaderSticky
+          classNames={{
+            base: "max-h-[75dvh] overflow-scroll",
+            table: "max-h-[70dvh] overflow-auto",
+          }} >
             <TableHeader>
               <TableColumn>Name</TableColumn>
-              <TableColumn>Main Category</TableColumn>
-              <TableColumn>Product</TableColumn>
-              <TableColumn>Status</TableColumn>
+              <TableColumn>Slug</TableColumn>
               <TableColumn>Action</TableColumn>
             </TableHeader>
-            <TableBody>
-              { categories.map( item => (
+            <TableBody isLoading={ isLoading } loadingContent={ <Spinner color="primary" /> } emptyContent={ subCategories.length === 0 ? "No Subcategories to display" : null }>
+              { subCategories.map( item => (
                 <TableRow key={ item.id }>
                   <TableCell>{ item.name }</TableCell>
                   <TableCell>
@@ -239,8 +272,6 @@ const AddSubcategory = () =>
                       ))}
                     </div>
                   </TableCell>
-                  <TableCell>{ item.productAmount }</TableCell>
-                  <TableCell className={item.status ? "text-success" :"text-danger"}>{ item.status ? "Active" : "Inactive" }</TableCell>
                   <TableCell>
                     <Popover showArrow placement="bottom" color="default">
                       <PopoverTrigger>
@@ -250,8 +281,8 @@ const AddSubcategory = () =>
                       </PopoverTrigger>
                       <PopoverContent>
                         <div className="flex flex-col space-y-2">
-                          <Button variant="flat" color="primary"><FaPencil/> Edit</Button>
-                          <Button variant="flat" color="danger"><FaTrash/> Delete</Button>
+                          <Button variant="flat" color="primary" onClick={()=>showEdit(item.id)}><FaPencil/> Edit</Button>
+                          <Button variant="flat" color="danger" onClick={()=>deleteItem(onOpen,item.id)}><FaTrash/> Delete</Button>
                         </div>
                       </PopoverContent>
                     </Popover>
@@ -261,7 +292,7 @@ const AddSubcategory = () =>
             </TableBody>
           </Table>
         </div>
-        <DeleteModal id={ id } isOpen={ isOpen } onOpenChange={ onOpenChange } setId={ setId } setCategories={ setCategories } />
+        <DeleteModal id={ id } isOpen={ isOpen } onOpenChange={ onOpenChange } setId={ setId } setCategories={ setSubCategories } />
       </div>
     </div>
   )

@@ -1,71 +1,29 @@
 import { BsSearch } from "react-icons/bs";
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Image, Input} from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { dev_url } from "../utils/axios";
 
 
 const Order = () =>
 {
-  const products = [
+  const axiosPrivate = useAxiosPrivate()
+  const [ orders, setOrders ] = useState( [] )
+
+
+
+  useEffect( () =>
+  {
+    ( async() =>
     {
-      image: "/assets/img/product/1.jpg",
-      name: "Men t-shirt",
-      customerName: "Jhon doe",
-      amount: 4000,
-      quantity: 12,
-      stock: 478,
-      status: "pending",
-      address:"Test street America"
-    },
-    {
-      image: "/assets/img/product/1.jpg",
-      name: "Men t-shirt",
-      customerName: "Jhon doe",
-      amount: 4000,
-      quantity: 12,
-      stock: 478,
-      status: "pending",
-      address:"Test street America"
-    },
-    {
-      image: "/assets/img/product/1.jpg",
-      name: "Men t-shirt",
-      customerName: "Jhon doe",
-      amount: 4000,
-      quantity: 12,
-      stock: 478,
-      status: "pending",
-      address:"Test street America"
-    },
-    {
-      image: "/assets/img/product/1.jpg",
-      name: "Men t-shirt",
-      customerName: "Jhon doe",
-      amount: 4000,
-      quantity: 12,
-      stock: 478,
-      status: "pending",
-      address:"Test street America"
-    },
-    {
-      image: "/assets/img/product/1.jpg",
-      name: "Men t-shirt",
-      customerName: "Jhon doe",
-      amount: 4000,
-      quantity: 12,
-      stock: 478,
-      status: "pending",
-      address:"Test street America"
-    },
-    {
-      image: "/assets/img/product/1.jpg",
-      name: "Men t-shirt",
-      customerName: "Jhon doe",
-      amount: 4000,
-      quantity: 12,
-      stock: 478,
-      status: "pending",
-      address:"Test street America"
-    },
-  ]
+      try {
+        const res = await axiosPrivate.get( `/order` )
+        setOrders(res.data.data.orders)
+      } catch (error) {
+        console.error(error);
+      }
+    })()
+  },[axiosPrivate])
   return (
     <div className="p-4 w-full h-full overflow-y-auto">
       <p className="font-extrabold text-xl capitalize text-primary">Order list</p>
@@ -90,25 +48,21 @@ const Order = () =>
             <TableColumn>Product</TableColumn>
             <TableColumn>Customer</TableColumn>
             <TableColumn>Amount</TableColumn>
-            <TableColumn>Quantity</TableColumn>
-            <TableColumn>Stock</TableColumn>
             <TableColumn>Status</TableColumn>
             <TableColumn>Address</TableColumn>
           </TableHeader>
           <TableBody>
-            { products.map( item => (
-              <TableRow key={ products.indexOf( item ) + 1 }>
-                <TableCell>{ products.indexOf(item)+1 }</TableCell>
+            { orders.map( item => (
+              <TableRow key={ item.id }>
+                <TableCell>{ orders.indexOf(item)+1 }</TableCell>
                 <TableCell>
                   <div className="flex space-x-2 items-center">
-                    <Image src={ item.image } className="w-10 h-10 object-contain" />
-                    <p>{ item.name }</p>
+                    <Image src={ `${dev_url.replace("/merchant","")}/${item.products[0].product.dp.replace("public/","")}` } className="w-10 h-10 object-contain" />
+                    <p>{ item.products[0].product.name }</p>
                   </div>
                 </TableCell>
-                <TableCell>{ item.customerName }</TableCell>
-                <TableCell>&#8358;{ item.amount }</TableCell>
-                <TableCell>{ item.quantity }</TableCell>
-                <TableCell>{ item.stock }</TableCell>
+                <TableCell>{ item.user.name }</TableCell>
+                <TableCell>&#8358;{ item.netAmount }</TableCell>
                 <TableCell className={item.status.toLowerCase() === "paid" ? "capitalize text-success" : item.status.toLowerCase() === "pending" ? "capitalize text-warning" : "capitalize text-danger"}>{ item.status }</TableCell>
                 <TableCell>{ item.address }</TableCell>
               </TableRow>

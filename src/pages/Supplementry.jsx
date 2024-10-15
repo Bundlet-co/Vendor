@@ -18,7 +18,6 @@ const DeleteModal = ({isOpen,onOpenChange,id,setId}) =>
   const deleteItem = async ( onClose ) =>
   {
     try {
-      console.log( id );
       const res = await axiosPrivate.delete( `/suplementry/${ id }` )
       const result = res.data
       openToast(result.message, "success")
