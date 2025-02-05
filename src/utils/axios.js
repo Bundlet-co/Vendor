@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const dev_url = "https://bundlet-server.vercel.app"
+export const dev_url = "https://bundlet-server.vercel.app/merchant"
 //export const dev_url = "https://bundlet-server.onrender.com/merchant"
 
 export default axios.create( {
