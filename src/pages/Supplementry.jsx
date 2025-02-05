@@ -2,7 +2,6 @@
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Image, Input, Popover, PopoverTrigger, PopoverContent, Button, Spinner, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure} from "@nextui-org/react";
 import { BsGear, BsSearch } from "react-icons/bs";
 import { FaPencil, FaTrash } from "react-icons/fa6";
-import { dev_url } from "../utils/axios";
 import useSuplementryList from "../hooks/useSuplementryList";
 import { useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
@@ -112,7 +111,7 @@ const Supplementry = () =>
             { products.items.map( item => (
               <TableRow key={ item.id } className="rounded-lg shadow-md h-10">
                 <TableCell>
-                  <Image src={`${dev_url.replace("/merchant","")}/${item.dp.replace("public/","")}`} className="w-10 h-10 object-contain" />
+                  <Image src={item.dp} className="w-10 h-10 object-contain" />
                 </TableCell>
                 <TableCell>{ item.name }</TableCell>
                 <TableCell>&#8358;{ item.price }</TableCell>

@@ -1,7 +1,6 @@
 import {Button, Image, Popover, PopoverContent, PopoverTrigger} from "@nextui-org/react"
 import { BsBoxArrowDown, BsBoxArrowUp, BsThreeDotsVertical } from "react-icons/bs";
 import useMainContext from "../hooks/useMainContext";
-import { dev_url } from "../utils/axios";
 import { FaWallet } from "react-icons/fa6";
 
 const Profile = () =>
@@ -15,7 +14,7 @@ const Profile = () =>
         <div className="border col-span-full lg:col-span-2 px-4 py-10 rounded-lg">
           <div className="flex items-center justify-center">
             <div className="flex items-center justify-center flex-col gap-4">
-              <Image src={user?.dp ? `${dev_url.replace("/merchant","")}/${user.dp.replace("public/","")}` :"/favicon.ico"} className="w-16 h-16 object-contain" />
+              <Image src={user.dp || "/favicon.ico"} className="w-16 h-16 object-contain" />
               {/* name */}
               <p className="capitalize text-xl font-bold text-neutral-700">{user?.name}</p>
               {/* email */ }

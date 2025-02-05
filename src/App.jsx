@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Verify from "./pages/Verify";
 import Supplementry from "./pages/Supplementry";
+import SingleOrder from "./pages/SingleOrder";
 
 
 const App = () => {
@@ -38,7 +39,10 @@ const App = () => {
             <Route path="add" element={ <AddProduct /> } />
             <Route path="category" element={ <AddCategory /> } />
             <Route path="sub-category" element={ <AddSubcategory /> } />
-            <Route path="order" element={ <Order /> } />
+            <Route path="order">
+              <Route index element={ <Order /> } />
+              <Route path=":id" element={ <SingleOrder /> } />
+            </Route>
             <Route path="profile" element={<Profile/>}/>
             <Route path="update" element={<UpdateProfile/>}/>
           </Route>
