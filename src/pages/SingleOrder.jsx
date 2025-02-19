@@ -108,18 +108,47 @@ const SingleOrder = () =>
                     <div>
                       <p>Quantity: { item.quantity }{ item.product.unit}</p>
                       <div className="flex space-x-2 items-center">
-                        <p>Variant:</p>
-                        { item.variation.type === "size" || item.variation.type ===  "others" ? (
-                          <p className="uppercase">{ item.variation.variant }</p>
-                        ) : (
-                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.variation.variant }}></div>
+                        { item.variation !== null && (
+                          <div className="flex space-x-2 items-center">
+                            <p>Variant:</p>
+                            { item.variation.type === "size" || item.variation.type ===  "others" ? (
+                              <p className="uppercase">{ item.variation.variant }</p>
+                            ) : (
+                              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.variation.variant }}/>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
+                    { item.supplementryProducts.length > 0 && (
+                      <div className="mt-4">
+                        <p className="font-bold text-small capitalize">Supplementary Product Informations</p>
+                        <div className="grid grid-cols-1 gap-4">
+                          { item.supplementryProducts.map( sup => (
+                            <div key={ sup.id } className="border p-4 rounded-lg">
+                              <div className="flex justify-between">
+                                <div className="flex space-x-2 items-center">
+                                  <p className="font-bold">{ sup.name }</p>
+                                </div>
+                                <p className="font-bold">&#8358;{ sup.price }</p>
+                              </div>
+                              <div>
+                                <p>Quantity: { sup.quantity }</p>
+                              </div>
+                            </div>
+                          ) ) }
+                          </div>
+                      </div>
+                    )}
                   </div>
                 ) ) }
               </div>
             </div>
+            {/* Supplementry Product */ }
+
+            
+            
+
             
             {/* Status Change */ }
             <div className="mt-4">

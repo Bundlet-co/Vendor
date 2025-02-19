@@ -17,18 +17,16 @@ import Signup from "./pages/Signup";
 import Verify from "./pages/Verify";
 import Supplementry from "./pages/Supplementry";
 import SingleOrder from "./pages/SingleOrder";
+import LayoutWrapper from "./LayoutWrapper"
 
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={
-        <MainProvider>
-          <Layout />
-        </MainProvider> }>
-        <Route path="login" element={ <Login /> } />
-        <Route path="register" element={ <Signup /> } />
-        <Route path="verify" element={<Verify/>}/>
+      <Route element={<MainProvider> <LayoutWrapper /></MainProvider>  }>
+        <Route path="/" element={<Layout />}>
+        
+        
         <Route element={ <Persit /> }>
           <Route element={ <RequiredAuth /> }>
             <Route index element={ <Home /> } />
@@ -50,6 +48,10 @@ const App = () => {
         
         {/* Missing Page */}
         <Route path="*" element={<Missing/>}/>
+      </Route>
+        <Route path="login" element={ <Login /> } />
+        <Route path="verify" element={ <Verify /> } />
+      <Route path="register" element={ <Signup /> } />
       </Route>
     </Routes>
   )

@@ -147,6 +147,7 @@ const AddProduct = () =>
         headers:{"Content-Type":"multipart/form-data"}
       } );
       await res.data.data.product
+      console.log(res.data);
       openToast(res.data.message,"success")
       setFormData( {
         name: "",
@@ -173,8 +174,8 @@ const AddProduct = () =>
       setVariation( [] )
       setComplemetryData([])
     } catch (error) {
-      console.error( error );
-      openToast(error.response.data,"error")
+      console.error( error.response.data );
+      openToast(error.response.data.message,"error")
     } finally {
       setLoading( false );
       setTimeout( () =>

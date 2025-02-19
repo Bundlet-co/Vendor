@@ -33,9 +33,9 @@ const Signup = () =>
   
   
   return (
-    <section className="h-[93dvh] flex justify-center items-center w-full border px-4">
-      <div className="w-full md:w-11/12 lg:w-1/2:2xl:w-1/4 shadow-md border rounded-md py-4 px-8">
-        <p className="text-primary text-2xl font-bold text-center my-4">Weclome To Bundlet</p>
+    <section className="h-[100dvh] flex justify-center items-center w-full">
+      <div className="w-full md:w-11/12 lg:w-3/4 2xl:w-1/2 shadow-md border rounded-md py-4 px-8">
+        <p className="text-primary text-2xl font-bold text-center my-4">Welcome To Bundlet</p>
         <p className="text-lg font-thin">Register</p>
         <hr className="mb-8"/>
         <div className="my-4 flex items-center justify-between">

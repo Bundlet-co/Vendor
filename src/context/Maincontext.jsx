@@ -191,7 +191,11 @@ export const MainProvider = ( { children } ) =>
     
     return ()=> clearInterval(interval)
   },[timeInSec])
-  const [ persist, setPersist ] = useState( JSON.parse( localStorage.getItem( "persist" ) ) || false );
+  const [ persist, setPersist ] = useState( () =>
+  {
+    const isPersist = localStorage.getItem( "persist" ) 
+    isPersist !== null ? JSON.parse(isPersist) : false
+  } );
   return (
     <MainContext.Provider value={ {user,persist,setPersist,formData,handleChange,loginSubmit,loading,show,message,status,closeToast,setDp, registerSubmit, timeInSec,resendOtp,verifyCode,setUser,openToast} }>
       {children}
