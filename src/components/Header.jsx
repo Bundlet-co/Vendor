@@ -34,7 +34,7 @@ const Header = () =>
             <BsBell size={20}/>
             <Popover placement="bottom" color="default">
               <PopoverTrigger>
-                <Avatar src={user?.dp ? `${dev_url.replace("/merchant","")}/images/vendors/${user.dp.replace("public/","")}` :"/favicon.ico"} size={user?.dp ? "md" : "sm"}  className="bg-gray-400" role="button"/>
+                <Avatar src={user?.dp ? `${dev_url.replace("/merchant","")}/${user.dp.replace("public/","")}` :"/favicon.ico"} size={user?.dp ? "md" : "sm"}  className="bg-gray-400" role="button"/>
               </PopoverTrigger>
               <PopoverTrigger>
               <PopoverContent className="w-72">

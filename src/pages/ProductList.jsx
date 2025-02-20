@@ -122,7 +122,7 @@ const ProductList = () =>
               <TableRow key={ item.id } className="rounded-lg shadow-md h-10">
                 <TableCell>
                   <Image
-                    src={`${dev_url.replace("/merchant","")}/images/products/${item.dp.replace("public/","")}`}
+                    src={`${dev_url.replace("/merchant","")}/${item.dp.replace("public/","")}`}
                     className="w-10 h-10 object-contain" />
                 </TableCell>
                 <TableCell>{ item.name }</TableCell>

@@ -101,7 +101,7 @@ const SingleOrder = () =>
                   <div key={ item.id } className="border p-4 rounded-lg">
                     <div className="flex justify-between">
                       <div className="flex space-x-2 items-center">
-                        <img src={`${dev_url.replace("/merchant","")}/images/products/${item.product.dp.replace("public/","")}`} alt={ item.product.name } className="w-10 h-10 object-contain" />
+                        <img src={`${dev_url.replace("/merchant","")}/${item.product.dp.replace("public/","")}`} alt={ item.product.name } className="w-10 h-10 object-contain" />
                         <p className="font-bold">{ item.product.name }</p>
                       </div>
                       <p className="font-bold">&#8358;{ item.price }</p>

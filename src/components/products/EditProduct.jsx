@@ -17,10 +17,10 @@ const EditProduct = ({products,id, setEditId,updatelist}) =>
   const { openToast, closeToast } = useMainContext();
   const [ images, setImages ] = useState( product.images );
     const [ img1, setImg1 ] = useState( product.images[0] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb );
-  const [ img2, setImg2 ] = useState( product.images[1] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb  );
-  const [ img3, setImg3 ] = useState( product.images[2] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb  );
-  const [ img4, setImg4 ] = useState( product.images[3] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb );
-  const [ img5, setImg5 ] = useState( product.images[4] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb  );
+  const [ img2, setImg2 ] = useState( product.images[1] ? `${dev_url.replace("/merchant","")}/${product.images[1].replace("public/","")}` : thumb  );
+  const [ img3, setImg3 ] = useState( product.images[2] ? `${dev_url.replace("/merchant","")}/${product.images[2].replace("public/","")}` : thumb  );
+  const [ img4, setImg4 ] = useState( product.images[3] ? `${dev_url.replace("/merchant","")}/${product.images[3].replace("public/","")}` : thumb );
+  const [ img5, setImg5 ] = useState( product.images[4] ? `${dev_url.replace("/merchant","")}/${product.images[4].replace("public/","")}` : thumb  );
   const [ hero, setHero ] = useState( product.dp ? `${ dev_url.replace( "/merchant", "" ) }/${ product.dp.replace( "public/", "" ) }` : thumb );
   const [ dp, setDp ] = useState( product.dp );
 

@@ -3,6 +3,7 @@ import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Image, 
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useNavigate } from "react-router-dom";
+import { dev_url } from "../utils/axios";
 
 
 const Order = () =>
@@ -58,7 +59,7 @@ const Order = () =>
                 <TableCell>{ orders.indexOf(item)+1 }</TableCell>
                 <TableCell>
                   <div className="flex space-x-2 items-center">
-                    <Image src={ item.products[0].product.dp } className="w-10 h-10 object-contain" />
+                    <Image src={ `${dev_url.replace("/merchant","")}/${item.products[0].product.dp}` } className="w-10 h-10 object-contain" />
                     <p>{ item.products[0].product.name }</p>
                   </div>
                 </TableCell>
