@@ -8,6 +8,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import {getLocalTimeZone, today} from "@internationalized/date";
 import useMainContext from "../../hooks/useMainContext";
 import Variation from "../../components/products/Variation";
+import { dev_url } from "../../utils/axios";
 
 const EditProduct = ({products,id, setEditId,updatelist}) =>
 {
@@ -15,13 +16,14 @@ const EditProduct = ({products,id, setEditId,updatelist}) =>
   const [product,setProduct] = useState(products.items.find( item => item.id === id ))
   const { openToast, closeToast } = useMainContext();
   const [ images, setImages ] = useState( product.images );
-  const [ img1, setImg1 ] = useState( product.images[0] ? `${product.images[0]}` : thumb );
-  const [ img2, setImg2 ] = useState( product.images[1] ? `${product.images[0]}` : thumb  );
-  const [ img3, setImg3 ] = useState( product.images[2] ? `${product.images[0]}` : thumb  );
-  const [ img4, setImg4 ] = useState( product.images[3] ? `${product.images[0]}` : thumb );
-  const [ img5, setImg5 ] = useState( product.images[4] ? `${product.images[0]}` : thumb  );
-  const [ hero, setHero ] = useState( product.dp || thumb  );
+    const [ img1, setImg1 ] = useState( product.images[0] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb );
+  const [ img2, setImg2 ] = useState( product.images[1] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb  );
+  const [ img3, setImg3 ] = useState( product.images[2] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb  );
+  const [ img4, setImg4 ] = useState( product.images[3] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb );
+  const [ img5, setImg5 ] = useState( product.images[4] ? `${dev_url.replace("/merchant","")}/${product.images[0].replace("public/","")}` : thumb  );
+  const [ hero, setHero ] = useState( product.dp ? `${ dev_url.replace( "/merchant", "" ) }/${ product.dp.replace( "public/", "" ) }` : thumb );
   const [ dp, setDp ] = useState( product.dp );
+
   const [ slug, setSlug ] = useState( "" )
   const [ date, setDate ] = useState( today(getLocalTimeZone()));
   const [ loading, setLoading ] = useState( false )
