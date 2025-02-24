@@ -16,11 +16,10 @@ export const MainProvider = ( { children } ) =>
   const [ show, setShow ] = useState( false )
   const [ message, setMessage ] = useState( "" )
   const [ status, setStatus ] = useState( "" )
-  const [ persist, setPersist ] = useState( () =>
-  {
-    const storedValue = localStorage.getItem("persist");
-  return storedValue ? JSON.parse(storedValue) : false;
-  } );
+  const [persist, setPersist] = useState(() => {
+  const storedValue = localStorage.getItem("persist");
+  return storedValue !== null && storedValue !== undefined ? JSON.parse(storedValue) : false;
+});
   //user state
   const [ user, setUser ] = useState( {} );
   const [ loading, setLoading] = useState(false)
@@ -195,6 +194,10 @@ export const MainProvider = ( { children } ) =>
     
     return ()=> clearInterval(interval)
   },[timeInSec])
+  
+  useEffect(() => {
+  localStorage.setItem("persist", JSON.stringify(persist ?? false));
+}, [persist]);
   
   return (
     <MainContext.Provider value={ {user,persist,setPersist,formData,handleChange,loginSubmit,loading,show,message,status,closeToast,setDp, registerSubmit, timeInSec,resendOtp,verifyCode,setUser,openToast} }>
