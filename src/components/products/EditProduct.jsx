@@ -123,7 +123,8 @@ const EditProduct = ({products,id, setEditId,updatelist}) =>
       const res = await axiosPrivate.patch( `/product/${ id }`, data )
       const result = res.data.data.product 
       setDp(result.dp)
-      updatelist(result)
+      updatelist( result )
+      openToast("Main image uopdated", "success")
     } catch (error) {
       console.error( error );
       openToast(error.response.data,"error")
@@ -144,6 +145,10 @@ const EditProduct = ({products,id, setEditId,updatelist}) =>
       {
         data.append('images',image)
       } )
+      const res = await axiosPrivate.patch( `/product/${ id }`, data )
+      const result = res.data.data.product 
+      updatelist( result )
+      openToast("Main image uopdated", "success")
       setHero( thumb )
       setImg1( thumb )
       setImg2( thumb )
@@ -261,7 +266,7 @@ const EditProduct = ({products,id, setEditId,updatelist}) =>
               </div>
             </div>
           </div>
-          <Button onClick={dpUpdate} className="my-4">Save</Button>
+          <Button onClick={dpUpdate} isLoading={loading} isDisabled={loading} className="my-4">Save</Button>
           <hr />
           {/* Other Image */}
           <div className="grid grid-cols-2 xl:grid-cols-3 gap-4 my-4">
@@ -325,8 +330,9 @@ const EditProduct = ({products,id, setEditId,updatelist}) =>
                 </div>
               </div>
             </div>
+            
           </div>
-          
+          <Button onClick={imageUpdate} isLoading={loading} isDisabled={loading} className="my-4">Save</Button>
         </div>
 
         <div className="col-span-full lg:col-span-3 border rounded-lg p-4 max-h-[100dvh] overflow-y-auto">

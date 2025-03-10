@@ -121,7 +121,7 @@ const SingleOrder = () =>
                         )}
                       </div>
                     </div>
-                    { item.supplementryProducts.length > 0 && (
+                    { item.supplementryProducts && item.supplementryProducts.length > 0 && (
                       <div className="mt-4">
                         <p className="font-bold text-small capitalize">Supplementary Product Informations</p>
                         <div className="grid grid-cols-1 gap-4">
