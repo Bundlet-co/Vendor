@@ -78,7 +78,7 @@ const SingleOrder = () =>
                   <p className="font-semibold">Order Id: <span className="text-tiny font-normal"> { order.id }</span></p>
                   <p className="font-semibold">Order Date: <span className="text-tiny font-normal"> { new Date(order.createdAt).toDateString() }</span></p>
                   <p className="font-semibold">Order Status: <span className="text-tiny font-normal"> { order.status }</span></p>
-                  <p className="font-semibold">Net Amount: <span className="text-tiny font-normal"> { order.netAmount }</span></p>
+                  <p className="font-semibold">Net Amount: <span className="text-tiny font-normal"> { parseFloat(order.netAmount).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}) }</span></p>
                   <p className="font-semibold">Delivery Address: <span className="text-tiny font-normal"> { order.address }</span></p>
                 </div>
               </div>
@@ -104,7 +104,7 @@ const SingleOrder = () =>
                         <img src={`${dev_url.replace("/merchant","")}/${item.product.dp.replace("public/","")}`} alt={ item.product.name } className="w-10 h-10 object-contain" />
                         <p className="font-bold">{ item.product.name }</p>
                       </div>
-                      <p className="font-bold">&#8358;{ item.price }</p>
+                      <p className="font-bold">&#8358;{ item.price.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}) }</p>
                     </div>
                     <div>
                       <p>Quantity: { item.quantity }{ item.product.unit}</p>
